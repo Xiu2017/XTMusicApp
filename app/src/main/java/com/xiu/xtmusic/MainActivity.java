@@ -776,13 +776,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //设置专辑封面
     public void setAlbum(File file, String path) {
         if (file.exists()) {
-            album.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 100f, 100f));
+            album.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 150f, 150f));
 /*                Picasso.with(this)
                         .load(file)
                         .resize(100, 100)
                         .into(album);*/
         }else {
-            album.setImageBitmap(ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.logo_red), 100f, 100f));
+            album.setImageBitmap(ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.logo_red), 150f, 150f));
         }
     }
 

@@ -521,7 +521,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     //设置专辑封面
     public void setAlbum(File file) {
-        album.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 350f, 350f));
+        album.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 500f, 500f));
 /*        Picasso.with(this)
                 .load(file)
                 .resize(350, 350)
@@ -541,7 +541,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
     public void albumDefault(String path) {
         //currentTime.setMax(0);
         //currentTime.setProgress(0);
-        Bitmap bitmap = ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.album_default), 350f, 350f);
+        Bitmap bitmap = ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.album_default), 500f, 500f);
         album.setImageBitmap(bitmap);
         bitmap = ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.album_default), 20f, 20f);
         bitmap = StackBlur.blur(bitmap, 4, true);
