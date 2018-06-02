@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#D23A31</color>
+    <color name="colorPrimaryDark">#D23A31</color>
+    <color name="colorAccent">#D23A31</color>
+
+    <color name="colorBackground">#EEEEEE</color>
+    <color name="colorText">#666666</color>
+    <color name="colorLine">#EEEEEE</color>
+
+    <color name="colorNotFound">#CCCCCC</color>
+    <color name="list_num">#919293</color>
+    <color name="list_title">#000000</color>
+    <color name="list_artist">#797A7B</color>
+
+    <color name="colorWrite">@android:color/white</color>
+    <color name="colorGray">@android:color/darker_gray</color>
+    <color name="colorLrc">#80FFFFFF</color>
+    <color name="colorAlbumBg">#20000000</color>
+</resources>

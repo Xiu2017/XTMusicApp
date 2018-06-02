@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/topBar"
+    android:layout_marginBottom="50dp"
+    tools:context="com.xiu.xtmusic.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+    <LinearLayout
+        android:id="@+id/emptyList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:letterSpacing="0.05"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/a4"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/hunt"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="48dp"
+        android:background="@drawable/circle_hunt"
+        android:onClick="onClick"
+        android:padding="5dp"
+        android:src="@mipmap/btn_hunt"
+        android:visibility="gone" />
+
+</RelativeLayout>

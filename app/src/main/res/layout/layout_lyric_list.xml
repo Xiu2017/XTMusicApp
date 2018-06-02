@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/transparent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/line"
+        android:text="如果这都不算爱"
+        android:background="@android:color/transparent"
+        android:textSize="15sp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="52dp" />
+</LinearLayout>

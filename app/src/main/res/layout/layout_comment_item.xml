@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingVertical="12dp"
+    android:paddingStart="5dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="24dp">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingHorizontal="8dp"
+                android:text="2018/05/23 - jannies"
+                android:textColor="@color/list_artist"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/likedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingRight="12dp"
+                android:text="34896"
+                android:textColor="@color/list_artist"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:lineSpacingMultiplier="1.1"
+            android:paddingHorizontal="8dp"
+            android:text="这首已经是华语顶尖舞曲的配置了，无论是作曲和后期制作的编曲和混音，中间remix也很出彩。多音轨打造的多层次高端舞曲。rap和最后的高音很惊艳，蔡依林应该是学了新唱腔。歌词是亮点，应该是华语舞曲没有写情爱的第一人了，态度鲜明，老娘就是要对所有黑我的人说呸！"
+            android:textColor="@color/list_title"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/bereq"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:lineSpacingMultiplier="1.1"
+            android:padding="8dp"
+            android:text="听众：这首已经是华语顶尖舞曲的配置了，无论是作曲和后期制作的编曲和混音，中间remix也很出彩。多音轨打造的多层次高端舞曲。rap和最后的高音很惊艳，蔡依林应该是学了新唱腔。歌词是亮点，应该是华语舞曲没有写情爱的第一人了，态度鲜明，老娘就是要对所有黑我的人说呸！"
+            android:textColor="@color/list_title"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

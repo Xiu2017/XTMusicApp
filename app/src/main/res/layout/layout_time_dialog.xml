@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TimePicker
+        android:id="@+id/time_picker"
+        android:timePickerMode="spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"></TimePicker>
+
+    <CheckBox
+        android:id="@+id/timerCk"
+        android:text="@string/a5"
+        android:textSize="14dp"
+        android:textColor="@android:color/black"
+        android:layout_marginLeft="18dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <item
+        android:id="@+id/nav_refresh"
+        android:icon="@mipmap/nav_refresh"
+        android:title="更新列表" />
+    <item
+        android:id="@+id/nav_timer_exit"
+        android:icon="@mipmap/nav_timer_exit"
+        android:title="定时退出" />
+    <item
+        android:id="@+id/nav_speed"
+        android:icon="@mipmap/nav_setting"
+        android:title="播放速度 1.0" />
+    <!--    <item
+            android:id="@+id/nav_pitch"
+            android:icon="@mipmap/ic_remind"
+            android:title="音阶调节 1.0" />-->
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@mipmap/nav_about"
+        android:title="关于" />
+    <item
+        android:id="@+id/nav_exit"
+        android:icon="@mipmap/nav_exit"
+        android:title="退出" />
+
+</menu>

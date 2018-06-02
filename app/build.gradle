@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.xiu.xtmusic"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 180602
+        versionName "1.5"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //ORMLite
+    compile 'com.j256.ormlite:ormlite-core:5.0'
+    compile 'com.j256.ormlite:ormlite-android:5.0'
+    //GSON
+    compile 'com.google.code.gson:gson:2.8.2'
+    //OKHTTP
+    implementation files('libs/okhttp-3.9.1.jar')
+    implementation files('libs/okio-1.13.0.jar')
+    //图片高斯模糊
+    compile 'net.qiujuer.genius:blur:2.0.0-beta4'
+    //圆形ImageView
+    compile 'de.hdodenhof:circleimageview:2.2.0'
+    //圆形进度条
+    compile 'com.czp.arcProgressBar:ArcProgressBar:1.0.1'
+    //音乐缓存
+    compile 'com.danikula:videocache:2.7.0'
+    //音乐可视化https://github.com/GautamChibde/android-audio-visualizer
+    //compile 'com.chibde:audiovisualizer:2.0.1'
+    //个性化Toast提示
+    compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
+    //图片开源框架
+    //compile 'com.squareup.picasso:picasso:2.5.2'
+    //破解网易云加密需要的包
+    implementation files('libs/fastjson-1.2.32.jar')
+    implementation files('libs/jsoup-1.10.3.jar')
+    compile 'io.apisense:rhino-android:1.0'
+    //EventBus
+    //compile 'org.greenrobot:eventbus:3.1.1'
+}
+repositories {
+    mavenCentral()
+}

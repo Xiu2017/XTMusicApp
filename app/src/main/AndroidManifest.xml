@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xiu.xtmusic">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <application
+        android:name="com.xiu.utils.mApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AlbumActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".PermissionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreen" />
+
+        <service android:name="com.xiu.service.MusicService">
+            <intent-filter>
+                <action android:name="android.intent.action.MUSIC_SERVICE" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AboutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ImageActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".CommentActivity" />
+    </application>
+
+</manifest>
