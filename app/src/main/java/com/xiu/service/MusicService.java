@@ -415,7 +415,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
 
         String innerSDPath = new StorageUtil(this).innerSDPath();
         String name = music.getName();
-        String toPath = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".png";
+        String toPath = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
         File file = new File(toPath);
         if (file.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(toPath);
