@@ -150,7 +150,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
         DisplayMetrics dm = resources.getDisplayMetrics();
         int width = dm.widthPixels;
         ViewGroup.LayoutParams lp = album.getLayoutParams();
-        lp.width = (int)(width*0.85);
+        lp.width = (int)(width*0.9);
         lp.height = lp.width;
         album.setLayoutParams(lp);
     }
@@ -185,9 +185,9 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
                     Intent intent = new Intent(AlbumActivity.this, CommentActivity.class);
                     intent.putExtra("musicId", musicId);
                     startActivity(intent);
-                }else {
+                }/*else {
                     TastyToast.makeText(AlbumActivity.this, "仅支持查看网易云音乐评论", Msg.LENGTH_SHORT, TastyToast.WARNING).show();
-                }
+                }*/
             }
         });
 
@@ -235,25 +235,30 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
             case R.id.playmodeBtn:
                 pref = getSharedPreferences("pref", MODE_PRIVATE);
                 editor = pref.edit();
+                String modeStr = "";
                 switch (app.getPlaymode()) {
                     case 0:
                         app.setPlaymode(1);
                         ((ImageView)view).setImageResource(R.mipmap.btn_loop_one);
                         editor.putInt("playmode", 1);
+                        modeStr = "单曲循环";
                         break;
                     case 1:
                         app.setPlaymode(2);
                         ((ImageView)view).setImageResource(R.mipmap.btn_random);
                         editor.putInt("playmode", 2);
+                        modeStr = "随机播放";
                         break;
                     case 2:
                         app.setPlaymode(0);
                         ((ImageView)view).setImageResource(R.mipmap.btn_loop);
                         editor.putInt("playmode", 0);
+                        modeStr = "列表循环";
                         break;
                 }
                 editor.apply();
                 editor.commit();
+                TastyToast.makeText(AlbumActivity.this, modeStr, Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
                 break;
             case R.id.lyricBtn:
                 if(viewPager.getCurrentItem() == 0){

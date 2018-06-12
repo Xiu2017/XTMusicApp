@@ -25,7 +25,7 @@
     <string name="a5">计时结束后播放完当前歌曲再停止</string>
     <string name="a6">还没有播放记录哦</string>
 
-    <string name="about">&#064;喵星球的匚盘君</string>
+    <string name="about">- @喵星球的匚盘君 -</string>
     <string name="github">https://github.com/Xiu2017/XTMusic_Android</string>
     <string name="tip">v1.5\n\n在线内容由酷狗音乐&amp;QQ音乐&amp;网易云音乐提供\n仅用于学习交流</string>
 
@@ -35,4 +35,24 @@
     <string name="tips">权限说明</string>
     <string name="context">录音权限：用于音乐可视化显示\n电话状态读取权限：当电话状态改变时，来电、电话呼出将暂停播放\n存储读写权限：歌曲的下载、专辑图片的保存等\n本应用承诺不会搜集用户的个人资料。</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="info">\n
+        - 本地歌曲支持mp3、m4a、flac格式\n
+        - 支持模糊搜索本地音乐\n
+        - 支持在线搜索酷狗音乐、QQ音乐、网易云音乐\n
+        - 酷狗音乐和网易云音乐为128kbps的mp3标准音质\n
+        - QQ音乐为m4a试听音质\n
+        - 歌词采用酷狗的歌词库\n
+        - 支持缓存音乐，仅消耗一次流量\n
+        - 可离线播放，可下载到本地，本地缓存大小512MB\n
+        - 长按专辑封面可全屏预览，支持保存到本地\n
+        - 播放网易云歌曲时，点击专辑封面即可查看歌曲评论\n
+        - 支持列表循环、单曲循环、随机播放三种播放模式\n
+        - 支持状态栏显示和播放控制\n
+        - 支持变速播放，可选范围：0.75~1.5\n
+        - 支持定时退出，支持定时结束播放完当前歌曲再退出\n
+        - 支持分享歌曲文件或歌曲链接\n
+        - 支持删除本地音乐，支持将本地音乐设置为手机铃声\n
+        - 支持查看歌曲信息\n
+        - 有任何问题都可以联系1530980540@qq.com
+    </string>
 </resources>

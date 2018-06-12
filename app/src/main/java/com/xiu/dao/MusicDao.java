@@ -87,7 +87,7 @@ public class MusicDao {
         music.setDate(System.currentTimeMillis());
         try {
             QueryBuilder builder = dao.queryBuilder();
-            builder.where().eq("name", music.getName())
+            builder.where().eq("name", music.getName().replace("'","''"))
                     .and().eq("size", music.getSize());
             List<Music> list = builder.query();
             if (list != null && list.size() > 0) {
