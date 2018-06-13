@@ -30,6 +30,7 @@ public class ImageActivity extends AppCompatActivity {
 
     private Bitmap bitmap;  //图片bitmap
     private Music music;  //音乐信息
+    private File file;  //专辑图片文件
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +50,10 @@ public class ImageActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.showImg);
         String innerSDPath = new StorageUtil(this).innerSDPath();
         String name = music.getName();
-        final String toPath = innerSDPath + "/XTMusic/AlbumImg/"
+        String toPath = innerSDPath + "/XTMusic/AlbumImg/"
                 + name.substring(0, name.lastIndexOf(".")) + ".jpg";
 
-        File file = new File(toPath);
+        file = new File(toPath);
         if (file.exists()) {
             imageView.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 500f, 500f));
         } else {
@@ -64,10 +65,14 @@ public class ImageActivity extends AppCompatActivity {
 
     //保存图片
     public void saveImg(View view){
-        if(music != null && bitmap != null){
-            String name = music.getName();
-            String savePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
-            savePath += "/Album/"+name.substring(0, name.lastIndexOf("."))+".jpg";
+        if(music == null) return;
+        String name = music.getName();
+        String savePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
+        savePath += "/Album/"+name.substring(0, name.lastIndexOf("."))+".jpg";
+        if(file != null && file.exists()){
+            FileUtils.copyFile(file.getAbsolutePath(),savePath);
+            TastyToast.makeText(this, "图片已保存到\n"+savePath, Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+        }else if(bitmap != null){
             if(savePath.equals(ImageUtil.saveBitmap(bitmap, savePath))){
                 TastyToast.makeText(this, "图片已保存到\n"+savePath, Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
             }else {

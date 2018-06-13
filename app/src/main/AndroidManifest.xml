@@ -54,6 +54,12 @@
             android:name=".ImageActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".CommentActivity" />
+
+        <receiver android:name="com.xiu.service.MediaButtonReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

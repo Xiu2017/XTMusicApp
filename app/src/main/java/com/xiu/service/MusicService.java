@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,16 +13,20 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.MediaCas;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -66,6 +71,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     private boolean interrupt;  //记录歌曲被打断的状态
     private mApplication app;
     private MediaPlayer mp;
+    private ComponentName mComponentName;
 
     private AudioManager am;
     private float speed = 1.0f;
@@ -149,11 +155,16 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         // this checks on API 23 and up6.0以上
         if (mp == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mp.isPlaying()) {
-                mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
-            } else {
-                mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
-                mp.pause();
+            try{
+                if (mp.isPlaying()) {
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
+                } else {
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
+                    mp.pause();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                TastyToast.makeText(app,"发生错误："+e.getMessage(),TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
             }
         }
     }
@@ -172,6 +183,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 //播放音乐
                 mp.start();
+                am.unregisterMediaButtonEventReceiver(mComponentName);
+                am.registerMediaButtonEventReceiver(mComponentName);
             }
         }
         musicNotification();
@@ -247,6 +260,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         mp.start();
                         senRefresh();  //通知activity更新信息
                         musicNotification();  //更新状态栏信息
+                        am.unregisterMediaButtonEventReceiver(mComponentName);
+                        am.registerMediaButtonEventReceiver(mComponentName);
                     }
                 }
             });
@@ -483,6 +498,57 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     };
 
+/*    public class MediaButtonIntentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String intentAction = intent.getAction();
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
+                KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                if (event == null) return;
+                int keycode = event.getKeyCode();
+                switch (keycode) {
+                    case KeyEvent.KEYCODE_MEDIA_STOP:
+                        //CMD STOP
+                        break;
+                    case KeyEvent.KEYCODE_HEADSETHOOK:
+                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        //CMD TOGGLE PAUSE
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_NEXT:
+                        //CMD NEXT 这里处理播放器逻辑 下一曲
+                        nextNum();
+                        play();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                        //CMD PREVIOUS 这里处理播放器逻辑 上一曲
+                        lastNum();
+                        play();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                        //CMD PAUSE 这里处理播放器逻辑 暂停
+                        mp.pause();
+                        senRefresh();  //通知activity更新信息
+                        musicNotification();  //更新状态栏信息
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
+                        //CMD PLAY 这里处理播放器逻辑 播放
+                        //获取焦点
+                        int result = am.requestAudioFocus(afChangeListener,
+                                AudioManager.STREAM_MUSIC,
+                                AudioManager.AUDIOFOCUS_GAIN);
+                        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                            //播放音乐
+                            mp.start();
+                            senRefresh();  //通知activity更新信息
+                            musicNotification();  //更新状态栏信息
+                        }
+                        break;
+                }
+            }
+        }
+    }*/
+
     //媒体焦点监听
     int oldFocusState = 0;  //记录旧的状态
     AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -500,6 +566,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         mp.start();
                         senRefresh();  //通知activity更新信息
                         musicNotification();  //更新状态栏信息
+                        am.unregisterMediaButtonEventReceiver(mComponentName);
+                        am.registerMediaButtonEventReceiver(mComponentName);
                     }
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
@@ -544,7 +612,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         //获取服务
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
+        //监听媒体按键
+        mComponentName = new ComponentName(this.getPackageName(),MediaButtonReceiver.class.getName());
+        am.registerMediaButtonEventReceiver(mComponentName);
         //定时刷新播放进度
         runnable.run();
 
@@ -574,6 +644,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             mp = null;
         }
         am.abandonAudioFocus(afChangeListener);
+        am.unregisterMediaButtonEventReceiver(mComponentName);
     }
 
     @Nullable
