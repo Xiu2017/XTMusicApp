@@ -905,11 +905,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if(!isTaskRoot()){
-                app.finishSplash();
-            }
             //否则后台运行
-            moveTaskToBack(false);
+            moveTaskToBack(true);
         }
     }
 

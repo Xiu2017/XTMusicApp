@@ -98,19 +98,10 @@ public class mApplication extends Application {
     public void addActivity(Activity activity) {
         activities.add(activity);
     }
-    public void addSplash(Activity activity){
-        splash.add(activity);
-    }
-    public void finishSplash(){
-        for (Activity activity : splash) {
-            activity.finish();
-        }
-    }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        finishSplash();
         for (Activity activity : activities) {
             activity.finish();
         }

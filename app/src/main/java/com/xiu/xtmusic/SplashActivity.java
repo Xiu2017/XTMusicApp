@@ -47,7 +47,7 @@ public class SplashActivity extends Activity {
 
         //dao = new MusicDao(this);
         app = (mApplication) getApplicationContext();
-        app.addSplash(this);
+        app.addActivity(this);
         handler = new Handler();
 
         createNoMedia();
@@ -77,6 +77,7 @@ public class SplashActivity extends Activity {
                 public void run() {
                     Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             }, SPLASH_DISPLAY_LENGHT);
         }
