@@ -10,25 +10,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.media.MediaCas;
 import android.media.MediaPlayer;
-import android.media.session.MediaSession;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.sdsmdg.tastytoast.TastyToast;
@@ -41,12 +41,9 @@ import com.xiu.utils.StorageUtil;
 import com.xiu.utils.mApplication;
 import com.xiu.xtmusic.AlbumActivity;
 import com.xiu.xtmusic.R;
-import com.xiu.xtmusic.SearchActivity;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -71,7 +68,12 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     private boolean interrupt;  //记录歌曲被打断的状态
     private mApplication app;
     private MediaPlayer mp;
+
     private ComponentName mComponentName;
+    private PendingIntent mPendingIntent;
+    private Handler mHandler;
+    private MediaSessionCompat mMediaSession;
+    //private KeyguardManager mKeyguardManager;
 
     private AudioManager am;
     private float speed = 1.0f;
@@ -183,8 +185,12 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 //播放音乐
                 mp.start();
-                am.unregisterMediaButtonEventReceiver(mComponentName);
-                am.registerMediaButtonEventReceiver(mComponentName);
+                //把MediaSession置为active，这样才能开始接收各种信息
+                if (!mMediaSession.isActive()) {
+                    mMediaSession.setActive(true);
+                }
+                //am.unregisterMediaButtonEventReceiver(mComponentName);
+                //am.registerMediaButtonEventReceiver(mComponentName);
             }
         }
         musicNotification();
@@ -260,8 +266,16 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         mp.start();
                         senRefresh();  //通知activity更新信息
                         musicNotification();  //更新状态栏信息
-                        am.unregisterMediaButtonEventReceiver(mComponentName);
-                        am.registerMediaButtonEventReceiver(mComponentName);
+                        //把MediaSession置为active，这样才能开始接收各种信息
+                        if (!mMediaSession.isActive()) {
+                            mMediaSession.setActive(true);
+                        }
+                        //更新锁屏音乐信息
+                        //if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
+                        //onLockScreen();
+                        //}
+                        //am.unregisterMediaButtonEventReceiver(mComponentName);
+                        //am.registerMediaButtonEventReceiver(mComponentName);
                     }
                 }
             });
@@ -341,6 +355,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     //用于定时发送音乐播放进度
+    //int reReceiverTime = 0;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -566,8 +581,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         mp.start();
                         senRefresh();  //通知activity更新信息
                         musicNotification();  //更新状态栏信息
-                        am.unregisterMediaButtonEventReceiver(mComponentName);
-                        am.registerMediaButtonEventReceiver(mComponentName);
+                        //am.registerMediaButtonEventReceiver(mComponentName);
                     }
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
@@ -583,6 +597,121 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             oldFocusState = focusChange;
         }
     };
+
+    //锁屏控制
+    public void onLockScreen(){
+        Music music = app.getmList().get(app.getIdx() - 1);
+        //同步当前的播放状态和播放时间
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder();
+        stateBuilder.setState(mp.isPlaying()?1:0, mp.getCurrentPosition(), speed);
+        mMediaSession.setPlaybackState(stateBuilder.build());
+
+        //同步歌曲信息
+        MediaMetadataCompat.Builder md = new MediaMetadataCompat.Builder();
+        md.putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getTitle());
+        md.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getArtist());
+        md.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum());
+        md.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getTime());
+        //专辑封面
+        String innerSDPath = new StorageUtil(this).innerSDPath();
+        String name = music.getName();
+        String toPath = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
+        File file = new File(toPath);
+        Bitmap bitmap;
+        if (file.exists()) {
+            bitmap = BitmapFactory.decodeFile(toPath);
+        } else {
+            bitmap = dao.getAlbumBitmap(music.getPath(), R.mipmap.album_default);
+        }
+        bitmap = ImageUtil.getimage(bitmap, 500f, 500f);
+        md.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, bitmap);
+
+        mMediaSession.setMetadata(md.build());
+    }
+
+    //开启线控功能
+    public void onDriveByWire(){
+        //监听媒体按键
+        mComponentName = new ComponentName(this,MediaButtonReceiver.class);
+        getPackageManager().setComponentEnabledSetting(mComponentName,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setComponent(mComponentName);
+        mPendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        //由于非线程安全，这里要把所有的事件都放到主线程中处理，使用这个handler保证都处于主线程
+        mHandler = new Handler(Looper.getMainLooper());
+
+        mMediaSession = new MediaSessionCompat(this, "mbr", mComponentName, null);
+        //指明支持的按键信息类型
+        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mMediaSession.setMediaButtonReceiver(mPendingIntent);
+        //这里指定可以接收的来自锁屏页面的按键信息
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(
+                PlaybackStateCompat.ACTION_FAST_FORWARD | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY
+                        | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP).build();
+        mMediaSession.setPlaybackState(state);//在Android5.0及以后的版本中线控信息在这里处理
+        mMediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public boolean onMediaButtonEvent(Intent intent) {
+                //通过Callback返回按键信息，为复用MediaButtonReceiver，直接调用它的onReceive()方法
+                MediaButtonReceiver mMediaButtonReceiver = new MediaButtonReceiver();
+                mMediaButtonReceiver.onReceive(MusicService.this, intent);
+                return true;
+            }
+        }, mHandler);    //把mHandler当做参数传入，保证按键事件处理在主线程
+
+        //把MediaSession置为active，这样才能开始接收各种信息
+        if (!mMediaSession.isActive()) {
+            mMediaSession.setActive(true);
+        }
+    }
+
+    //媒体按键监听
+/*    class MediaButtonReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Intent sBroadcast = new Intent();
+            sBroadcast.setAction("sBroadcast");
+            // 获得KeyEvent对象
+            KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
+                boolean isActionUp = (event.getAction() == KeyEvent.ACTION_UP);
+                // 这里会收到两次，我们只判断 up
+                if (!isActionUp) {
+                    return;
+                }
+                // 获得按键码
+                int keycode = event.getKeyCode();
+                switch (keycode) {
+                    case KeyEvent.KEYCODE_MEDIA_NEXT:
+                        //播放下一首
+                        sBroadcast.putExtra("what", Msg.PLAY_NEXT);
+                        context.sendBroadcast(sBroadcast);
+                        Log.d("MediaButton", "next");
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                        //播放上一首
+                        sBroadcast.putExtra("what", Msg.PLAY_LAST);
+                        context.sendBroadcast(sBroadcast);
+                        Log.d("MediaButton", "last");
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
+                        //中间按钮,暂停or播放
+                        //可以通过发送一个新的广播通知正在播放的视频页面,暂停或者播放视频
+                        sBroadcast.putExtra("what", Msg.PLAY_PAUSE);
+                        context.sendBroadcast(sBroadcast);
+                        Log.d("MediaButton", "playpluse");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }*/
 
     //完全退出应用
     public void exitApp() {
@@ -612,9 +741,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         //获取服务
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        //监听媒体按键
-        mComponentName = new ComponentName(this.getPackageName(),MediaButtonReceiver.class.getName());
-        am.registerMediaButtonEventReceiver(mComponentName);
+        //mKeyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+        onDriveByWire();
+        //am.registerMediaButtonEventReceiver(mComponentName);
         //定时刷新播放进度
         runnable.run();
 
@@ -644,7 +773,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             mp = null;
         }
         am.abandonAudioFocus(afChangeListener);
-        am.unregisterMediaButtonEventReceiver(mComponentName);
+        mMediaSession.release();
+        //am.unregisterMediaButtonEventReceiver(mComponentName);
     }
 
     @Nullable
