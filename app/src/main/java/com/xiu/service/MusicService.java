@@ -1,6 +1,7 @@
 package com.xiu.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -22,6 +23,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -153,20 +155,20 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     };
 
     //播放速度
-    public void changeplayerSpeed(){
+    public void changeplayerSpeed() {
         // this checks on API 23 and up6.0以上
         if (mp == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try{
+            try {
                 if (mp.isPlaying()) {
                     mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
                 } else {
                     mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
                     mp.pause();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                TastyToast.makeText(app,"发生错误："+e.getMessage(),TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
+                TastyToast.makeText(app, "发生错误：" + e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
             }
         }
     }
@@ -385,7 +387,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                 exitApp();
             }
         }
-    };
+    }
+
+    ;
 
     //计算下一首音乐编号
     public void nextNum() {
@@ -412,9 +416,19 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
 
     //通知栏通知
     public void musicNotification() {
+
         if (app.getmList() == null || app.getmList().size() == 0 || app.getIdx() == 0) return;
         Music music = app.getmList().get(app.getIdx() - 1);
+
         Notification notification = new Notification();
+
+        //解决Andorid8.0版本通知兼容问题
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("21120902", "21120902", NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "21120902");
+            notification = builder.build();
+        }
         notification.icon = R.mipmap.ic_launcher;
         notification.flags = Notification.FLAG_NO_CLEAR;
         //点击播放按钮发出的广播
@@ -462,7 +476,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
         notification.contentView = views;
         notification.contentIntent = pendingIntent;
-        manager.notify(1, notification);
+        manager.notify(21120902, notification);
     }
 
     //电话状态改变，进行暂停&恢复操作
@@ -599,11 +613,11 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     };
 
     //锁屏控制
-    public void onLockScreen(){
+    public void onLockScreen() {
         Music music = app.getmList().get(app.getIdx() - 1);
         //同步当前的播放状态和播放时间
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder();
-        stateBuilder.setState(mp.isPlaying()?1:0, mp.getCurrentPosition(), speed);
+        stateBuilder.setState(mp.isPlaying() ? 1 : 0, mp.getCurrentPosition(), speed);
         mMediaSession.setPlaybackState(stateBuilder.build());
 
         //同步歌曲信息
@@ -630,9 +644,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     //开启线控功能
-    public void onDriveByWire(){
+    public void onDriveByWire() {
         //监听媒体按键
-        mComponentName = new ComponentName(this,MediaButtonReceiver.class);
+        mComponentName = new ComponentName(this, MediaButtonReceiver.class);
         getPackageManager().setComponentEnabledSetting(mComponentName,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
@@ -763,7 +777,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             Log.i("onDestroy", "sBroadcast已被清除");
         }
         //清除通知
-        manager.cancel(1);
+        manager.cancel(21120902);
         //移除hander回调函数和消息
         handler.removeCallbacksAndMessages(null);
         //释放MediaPlay

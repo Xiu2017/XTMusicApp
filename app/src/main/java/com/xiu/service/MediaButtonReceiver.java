@@ -33,13 +33,11 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     //播放下一首
                     sBroadcast.putExtra("what", Msg.PLAY_NEXT);
                     context.sendBroadcast(sBroadcast);
-                    Log.d("MediaButton", "next");
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                     //播放上一首
                     sBroadcast.putExtra("what", Msg.PLAY_LAST);
                     context.sendBroadcast(sBroadcast);
-                    Log.d("MediaButton", "last");
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -47,7 +45,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     //可以通过发送一个新的广播通知正在播放的视频页面,暂停或者播放视频
                     sBroadcast.putExtra("what", Msg.PLAY_PAUSE);
                     context.sendBroadcast(sBroadcast);
-                    Log.d("MediaButton", "playpluse");
                     break;
                 default:
                     break;
