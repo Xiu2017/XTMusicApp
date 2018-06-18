@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -22,9 +23,9 @@
 
         <TextView
             android:id="@+id/musicTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="炫听音乐"
@@ -36,7 +37,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -49,9 +51,9 @@
 
         <TextView
             android:id="@+id/musicArtist"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="炫听音乐"
@@ -63,7 +65,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -76,9 +79,9 @@
 
         <TextView
             android:id="@+id/musicAlbum"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="炫听音乐"
@@ -90,7 +93,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -103,9 +107,9 @@
 
         <TextView
             android:id="@+id/fileName"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="炫听音乐"
@@ -117,7 +121,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -130,9 +135,9 @@
 
         <TextView
             android:id="@+id/musicTime"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="00:00"
@@ -144,7 +149,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -157,9 +163,9 @@
 
         <TextView
             android:id="@+id/fileSize"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="0.0M"
@@ -171,7 +177,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -184,9 +191,9 @@
 
         <TextView
             android:id="@+id/fileType"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="mp3"
@@ -196,10 +203,10 @@
     </LinearLayout>
 
     <LinearLayout
-        android:paddingBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingVertical="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -212,9 +219,9 @@
 
         <TextView
             android:id="@+id/filePath"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="/"

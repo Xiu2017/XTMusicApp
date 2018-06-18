@@ -31,9 +31,9 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="95dp"
+            android:layout_marginStart="95dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -68,7 +68,8 @@
             android:layout_gravity="center_vertical"
             android:background="?android:attr/selectableItemBackground"
             android:onClick="playControl"
-            android:paddingHorizontal="5dp"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
             android:src="@mipmap/btn_play_red" />
 
         <ImageView
@@ -78,7 +79,8 @@
             android:layout_gravity="center_vertical"
             android:background="?android:attr/selectableItemBackground"
             android:onClick="playControl"
-            android:paddingHorizontal="10dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
             android:src="@mipmap/btn_next_red" />
     </LinearLayout>
 
@@ -89,27 +91,31 @@
             android:layout_height="3dp"
             android:layout_above="@+id/btmBar"
             android:max="0" />-->
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="96dp"
+        android:layout_height="80dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/album"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="13dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="4.5dp"
-        android:src="@mipmap/logo_red" />
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/album"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/logo_red" />
 
-    <com.czp.library.ArcProgress
-        android:id="@+id/currentTime"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginLeft="8dp"
-        android:rotation="180"
-        app:borderWidth="3dp"
-        app:degree="0"
-        app:progressColor="@color/colorPrimary"
-        app:progressStyle="arc"
-        app:radius="40dp"
-        app:unprogresColor="#30000000" />
+        <com.czp.library.ArcProgress
+            android:id="@+id/currentTime"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:rotation="180"
+            app:arcbgColor="@android:color/transparent"
+            app:borderWidth="3dp"
+            app:degree="0"
+            app:progressColor="@color/colorPrimary"
+            app:progressStyle="arc"
+            app:radius="40dp"
+            app:unprogresColor="#30000000" />
+    </RelativeLayout>
 
 </RelativeLayout>

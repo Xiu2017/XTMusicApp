@@ -52,14 +52,14 @@ public class MusicInfoDialog extends Dialog {
 
         //绑定数据
         TextView musicTitle, musicArtist, musicAlbum, fileName, musicTime, fileSize, fileType, filePath;
-        musicTitle = view.findViewById(R.id.musicTitle);
-        musicArtist = view.findViewById(R.id.musicArtist);
-        musicAlbum = view.findViewById(R.id.musicAlbum);
-        fileName = view.findViewById(R.id.fileName);
-        musicTime = view.findViewById(R.id.musicTime);
-        fileSize = view.findViewById(R.id.fileSize);
-        fileType = view.findViewById(R.id.fileType);
-        filePath = view.findViewById(R.id.filePath);
+        musicTitle = (TextView) view.findViewById(R.id.musicTitle);
+        musicArtist = (TextView) view.findViewById(R.id.musicArtist);
+        musicAlbum = (TextView) view.findViewById(R.id.musicAlbum);
+        fileName = (TextView) view.findViewById(R.id.fileName);
+        musicTime = (TextView) view.findViewById(R.id.musicTime);
+        fileSize = (TextView) view.findViewById(R.id.fileSize);
+        fileType = (TextView) view.findViewById(R.id.fileType);
+        filePath = (TextView) view.findViewById(R.id.filePath);
 
         String name = music.getName();
 

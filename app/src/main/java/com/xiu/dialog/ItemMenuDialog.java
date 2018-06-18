@@ -53,9 +53,9 @@ public class ItemMenuDialog extends Dialog {
         getWindow().setAttributes(layoutParams);
 
         //绑定数据
-        TextView title = view.findViewById(R.id.title);
+        TextView title = (TextView) view.findViewById(R.id.title);
         title.setText(music.getTitle());
-        TextView id = view.findViewById(R.id.musicNum);
+        TextView id = (TextView) view.findViewById(R.id.musicNum);
         id.setText(num);
     }
 

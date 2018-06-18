@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:paddingVertical="12dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
     android:paddingStart="5dp">
 
     <LinearLayout
@@ -25,7 +26,8 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:paddingHorizontal="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:text="2018/05/23 - jannies"
                 android:textColor="@color/list_artist"
                 android:textSize="15sp" />
@@ -37,7 +39,7 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:paddingRight="12dp"
+                android:paddingEnd="12dp"
                 android:text="34896"
                 android:textColor="@color/list_artist"
                 android:textSize="15sp" />
@@ -49,7 +51,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:lineSpacingMultiplier="1.1"
-            android:paddingHorizontal="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:text="这首已经是华语顶尖舞曲的配置了，无论是作曲和后期制作的编曲和混音，中间remix也很出彩。多音轨打造的多层次高端舞曲。rap和最后的高音很惊艳，蔡依林应该是学了新唱腔。歌词是亮点，应该是华语舞曲没有写情爱的第一人了，态度鲜明，老娘就是要对所有黑我的人说呸！"
             android:textColor="@color/list_title"
             android:textSize="15sp" />
@@ -58,7 +61,8 @@
             android:id="@+id/bereq"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@android:color/white"
             android:gravity="center_vertical"
             android:lineSpacingMultiplier="1.1"

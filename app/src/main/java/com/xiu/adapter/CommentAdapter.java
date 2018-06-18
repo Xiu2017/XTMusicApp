@@ -58,10 +58,10 @@ public class CommentAdapter extends BaseAdapter {
         if (view == null) {
             group = new CommentGroup();
             view = View.inflate(context, R.layout.layout_comment_item, null);
-            group.username = view.findViewById(R.id.username);
-            group.likedCount = view.findViewById(R.id.likedCount);
-            group.content = view.findViewById(R.id.content);
-            group.bereq = view.findViewById(R.id.bereq);
+            group.username = (TextView) view.findViewById(R.id.username);
+            group.likedCount = (TextView) view.findViewById(R.id.likedCount);
+            group.content = (TextView) view.findViewById(R.id.content);
+            group.bereq = (TextView) view.findViewById(R.id.bereq);
             view.setTag(group);
         } else {
             group = (CommentGroup) view.getTag();

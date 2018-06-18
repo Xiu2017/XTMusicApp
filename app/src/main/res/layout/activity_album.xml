@@ -23,7 +23,7 @@
             android:id="@+id/back"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_marginTop="3dp"
             android:onClick="onClick"
             android:padding="10dp"
@@ -33,15 +33,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="42dp"
-            android:layout_marginRight="48dp"
+            android:layout_marginStart="42dp"
+            android:layout_marginEnd="48dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <com.xiu.customview.MarqueeTextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="0dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
@@ -62,7 +62,8 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
-                android:paddingVertical="2dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
                 android:text="炫酷生活"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
@@ -72,8 +73,8 @@
             android:id="@+id/share"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="6dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="6dp"
             android:layout_marginTop="3dp"
             android:onClick="onClick"
             android:padding="10dp"
@@ -161,15 +162,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:paddingLeft="12dp"
+                android:paddingStart="12dp"
                 android:text="00:00"
                 android:textColor="@android:color/white"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
 
             <SeekBar
                 android:id="@+id/currentTime"
                 style="@style/CustomSeekbarStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1" />
@@ -179,10 +180,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:paddingRight="14dp"
+                android:paddingEnd="14dp"
                 android:text="00:00"
                 android:textColor="@android:color/white"
-                android:textSize="12dp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -242,7 +243,7 @@
                 android:layout_weight="1"
                 android:text="词"
                 android:onClick="onClick"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/colorNotFound"
                 android:gravity="center"
                 android:padding="12dp" />

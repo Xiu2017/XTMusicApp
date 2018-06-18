@@ -73,14 +73,14 @@ public class SearchListAdapter extends BaseAdapter {
                 musicItem = new MusicItem();
                 view = View.inflate(context, R.layout.layout_list_item, null);
 
-                musicItem.list_item = view.findViewById(R.id.list_item);
-                musicItem.item_menu = view.findViewById(R.id.item_menu);
-                musicItem.musicNum = view.findViewById(R.id.musicNum);
-                musicItem.playing = view.findViewById(R.id.playing);
-                musicItem.musicTitle = view.findViewById(R.id.musicTitle);
-                musicItem.musicArtist = view.findViewById(R.id.musicArtist);
-                musicItem.musicPath = view.findViewById(R.id.musicPath);
-                musicItem.kugou = view.findViewById(R.id.kugou);
+                musicItem.list_item = (LinearLayout) view.findViewById(R.id.list_item);
+                musicItem.item_menu = (LinearLayout) view.findViewById(R.id.item_menu);
+                musicItem.musicNum = (TextView) view.findViewById(R.id.musicNum);
+                musicItem.playing = (ImageView) view.findViewById(R.id.playing);
+                musicItem.musicTitle = (TextView) view.findViewById(R.id.musicTitle);
+                musicItem.musicArtist = (TextView) view.findViewById(R.id.musicArtist);
+                musicItem.musicPath = (TextView) view.findViewById(R.id.musicPath);
+                musicItem.kugou = (ImageView) view.findViewById(R.id.kugou);
 
                 view.setTag(musicItem);
             } else {

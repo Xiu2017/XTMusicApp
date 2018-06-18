@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //初始化viewPager
     public void initViewPager() {
-        viewPager = findViewById(R.id.viewPager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         //查找布局文件
         LayoutInflater inflater = getLayoutInflater();
         localTab = inflater.inflate(R.layout.layout_list, null);
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //初始化专辑旋转动画
     public void initAnim() {
-        ImageView album = findViewById(R.id.album);
+        ImageView album = (ImageView) findViewById(R.id.album);
         rotation = ObjectAnimator.ofFloat(album, "rotation", 0.0F, 359.9F);
         rotation.setRepeatCount(-1);
         rotation.setDuration(30000);
@@ -202,15 +202,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //初始化NavigationView
     public void initNavigationView() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         timerItem = navigationView.getMenu().getItem(1);
@@ -273,20 +273,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //初始化布局元素
     public void initView() {
-        group = findViewById(R.id.group);
-        drawer = findViewById(R.id.drawer_layout);
-        playBtn = findViewById(R.id.playBtn);
-        title = findViewById(R.id.title);
-        artist = findViewById(R.id.artist);
-        album = findViewById(R.id.album);
+        group = (LinearLayout) findViewById(R.id.group);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        playBtn = (ImageView) findViewById(R.id.playBtn);
+        title = (TextView) findViewById(R.id.title);
+        artist = (TextView) findViewById(R.id.artist);
+        album = (ImageView) findViewById(R.id.album);
         //mainMenu = findViewById(R.id.mainMenu);
-        currentTime = findViewById(R.id.currentTime);
-        musicList = localTab.findViewById(R.id.musicList);
-        historyList = historyTab.findViewById(R.id.musicList);
-        emptyList = findViewById(R.id.emptyList);
-        hunt = findViewById(R.id.hunt);
-        musicSize = findViewById(R.id.musicSize);
-        musicName = findViewById(R.id.musicName);
+        currentTime = (ProgressBar) findViewById(R.id.currentTime);
+        musicList = (ListView) localTab.findViewById(R.id.musicList);
+        historyList = (ListView) historyTab.findViewById(R.id.musicList);
+        emptyList = (LinearLayout) findViewById(R.id.emptyList);
+        hunt = (ImageView) findViewById(R.id.hunt);
+        musicSize = (TextView) findViewById(R.id.musicSize);
+        musicName = (TextView) findViewById(R.id.musicName);
     }
 
     //viewpager切换到指定item
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //自定义控件
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         final View view = getLayoutInflater().inflate(R.layout.layout_time_dialog, null);
-        final TimePicker timePicker = view.findViewById(R.id.time_picker);
+        final TimePicker timePicker = (TimePicker) view.findViewById(R.id.time_picker);
         //初始化时间
         timePicker.setCurrentHour(0);
         timePicker.setCurrentMinute(20);
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 int mMinute = timePicker.getCurrentMinute();
                 int time = (mHour * 60 + mMinute) * 60 * 1000;
 
-                CheckBox timerCk = view.findViewById(R.id.timerCk);
+                CheckBox timerCk = (CheckBox) view.findViewById(R.id.timerCk);
                 boolean checked = timerCk.isChecked();
 
                 timerExit(time, checked);
@@ -428,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 break;*/
             case R.id.item_menu:  //点击了item菜单
                 LinearLayout layout = (LinearLayout) view.getParent();
-                TextView num = layout.findViewById(R.id.musicNum);
+                TextView num = (TextView) layout.findViewById(R.id.musicNum);
                 Music music = getMusicByNum(view);
                 dialog = new ItemMenuDialog(this, music, num.getText().toString());
                 dialog.show();
@@ -603,7 +603,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //根据音乐编号获取音乐
     public Music getMusicByNum(View view) {
         LinearLayout layout1 = (LinearLayout) view.getParent();
-        TextView textView = layout1.findViewById(R.id.musicNum);
+        TextView textView = (TextView) layout1.findViewById(R.id.musicNum);
         int musicNum = Integer.parseInt(textView.getText().toString());
         if (viewPager.getCurrentItem() == 0) {
             return list.get(musicNum - 1);
@@ -680,7 +680,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //点击了item
     public void clickItem(View view) {
         //获取要播放歌曲的编号
-        TextView textView = view.findViewById(R.id.musicNum);
+        TextView textView = (TextView) view.findViewById(R.id.musicNum);
         int musicNum = Integer.parseInt(textView.getText().toString());
         sendPlay(musicNum);
     }
@@ -800,8 +800,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
         for (int i = 0; i < temp.size(); i++) {
             Music music = temp.get(i);
-            TextView name = findViewById(R.id.musicName);
-            TextView size = findViewById(R.id.musicSize);
+            TextView name = (TextView) findViewById(R.id.musicName);
+            TextView size = (TextView) findViewById(R.id.musicSize);
             if (name.getText().toString().equals(music.getName()) && size.getText().toString().equals(music.getSize() + "")) {
                 app.setIdx(i + 1);
                 break;

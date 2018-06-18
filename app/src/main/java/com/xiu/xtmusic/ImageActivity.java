@@ -47,7 +47,7 @@ public class ImageActivity extends AppCompatActivity {
 
     //获取图片
     public void getImg(){
-        ImageView imageView = findViewById(R.id.showImg);
+        ImageView imageView = (ImageView) findViewById(R.id.showImg);
         String innerSDPath = new StorageUtil(this).innerSDPath();
         String name = music.getName();
         String toPath = innerSDPath + "/XTMusic/AlbumImg/"

@@ -147,7 +147,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     //初始化viewPager
     public void initViewPager() {
-        viewPager = findViewById(R.id.viewPager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         //查找布局文件
         LayoutInflater inflater = getLayoutInflater();
         view1 = inflater.inflate(R.layout.layout_list, null);
@@ -220,16 +220,16 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     //初始化布局元素
     private void initView() {
-        seaList = view1.findViewById(R.id.musicList);
-        seaKugou = view2.findViewById(R.id.musicList);
-        seaQq = view3.findViewById(R.id.musicList);
-        seaNet = view4.findViewById(R.id.musicList);
-        keywork = findViewById(R.id.keyword);
-        loadlist = findViewById(R.id.loadlist);
-        local = findViewById(R.id.local);
-        kghttp = findViewById(R.id.kghttp);
-        qqhttp = findViewById(R.id.qqhttp);
-        nethttp = findViewById(R.id.nethttp);
+        seaList = (ListView) view1.findViewById(R.id.musicList);
+        seaKugou = (ListView) view2.findViewById(R.id.musicList);
+        seaQq = (ListView) view3.findViewById(R.id.musicList);
+        seaNet = (ListView) view4.findViewById(R.id.musicList);
+        keywork = (EditText) findViewById(R.id.keyword);
+        loadlist = (ProgressBar) findViewById(R.id.loadlist);
+        local = (TextView) findViewById(R.id.local);
+        kghttp = (TextView) findViewById(R.id.kghttp);
+        qqhttp = (TextView) findViewById(R.id.qqhttp);
+        nethttp = (TextView) findViewById(R.id.nethttp);
         keywork.setOnEditorActionListener(this);
     }
 
@@ -588,7 +588,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //根据音乐编号获取音乐
     public Music getMusicByNum(View view) {
         LinearLayout layout = (LinearLayout) view;
-        TextView textView = layout.findViewById(R.id.musicNum);
+        TextView textView = (TextView) layout.findViewById(R.id.musicNum);
         int musicNum = Integer.parseInt(textView.getText().toString());
         Music music = null;
         switch (viewPager.getCurrentItem()) {

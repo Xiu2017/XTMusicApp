@@ -56,7 +56,7 @@ public class LyricListAdapter extends BaseAdapter {
         TextView line;
         if (view == null) {
             view = View.inflate(context, R.layout.layout_lyric_list, null);
-            line = view.findViewById(R.id.line);
+            line = (TextView) view.findViewById(R.id.line);
             view.setTag(line);
         } else {
             line = (TextView) view.getTag();

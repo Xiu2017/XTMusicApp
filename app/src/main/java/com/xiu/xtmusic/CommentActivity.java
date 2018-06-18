@@ -42,8 +42,8 @@ public class CommentActivity extends AppCompatActivity {
         //初始化沉浸式状态栏
         initStatusBar();
 
-        bar = findViewById(R.id.loadlist);
-        noComment = findViewById(R.id.noComment);
+        bar = (ProgressBar) findViewById(R.id.loadlist);
+        noComment = (TextView) findViewById(R.id.noComment);
 
         Intent intent = getIntent();
         musicId = intent.getStringExtra("musicId");
@@ -89,7 +89,7 @@ public class CommentActivity extends AppCompatActivity {
                     } else {
                         noComment.setVisibility(View.GONE);
                         adapter = new CommentAdapter(commentList.getList(), CommentActivity.this);
-                        list = findViewById(R.id.commentList);
+                        list = (ListView) findViewById(R.id.commentList);
                         list.setAdapter(adapter);
                     }
                     bar.setVisibility(View.GONE);

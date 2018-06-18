@@ -28,6 +28,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             }
             // 获得按键码
             int keycode = event.getKeyCode();
+            //Log.d("keycode", keycode+"");
             switch (keycode) {
                 case KeyEvent.KEYCODE_MEDIA_NEXT:
                     //播放下一首
@@ -41,6 +42,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     //中间按钮,暂停or播放
                     //可以通过发送一个新的广播通知正在播放的视频页面,暂停或者播放视频
                     sBroadcast.putExtra("what", Msg.PLAY_PAUSE);

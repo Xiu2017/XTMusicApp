@@ -30,9 +30,10 @@
             android:gravity="center"
             android:hint="歌曲/歌手/专辑"
             android:imeOptions="actionSearch"
-            android:paddingHorizontal="12dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:singleLine="true"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
         <!--        <Button
                     android:id="@+id/searchBtn"
                     android:text="搜索"
@@ -65,7 +66,7 @@
             android:gravity="center"
             android:text="搜本地"
             android:textColor="@color/colorPrimary"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/kghttp"
@@ -76,7 +77,7 @@
             android:gravity="center"
             android:text="搜酷狗"
             android:textColor="@color/colorText"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/qqhttp"
@@ -87,7 +88,7 @@
             android:gravity="center"
             android:text="搜Q音"
             android:textColor="@color/colorText"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/nethttp"
@@ -98,7 +99,7 @@
             android:gravity="center"
             android:text="搜网易"
             android:textColor="@color/colorText"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 <!--    <ListView

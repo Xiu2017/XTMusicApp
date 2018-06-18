@@ -1,7 +1,6 @@
 package com.xiu.service;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -23,7 +22,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -167,8 +165,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                     mp.pause();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                TastyToast.makeText(app, "发生错误：" + e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
+                //e.printStackTrace();
+                //TastyToast.makeText(app, "发生错误：" + e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
             }
         }
     }
@@ -179,6 +177,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             return;
         } else if (mp.isPlaying()) {
             mp.pause();
+            updatePlaybackState(0);
         } else {
             //获取焦点
             int result = am.requestAudioFocus(afChangeListener,
@@ -187,6 +186,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 //播放音乐
                 mp.start();
+                updatePlaybackState(1);
                 //把MediaSession置为active，这样才能开始接收各种信息
                 if (!mMediaSession.isActive()) {
                     mMediaSession.setActive(true);
@@ -266,12 +266,15 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         //播放音乐
                         changeplayerSpeed();
                         mp.start();
+                        updatePlaybackState(1);
                         senRefresh();  //通知activity更新信息
                         musicNotification();  //更新状态栏信息
                         //把MediaSession置为active，这样才能开始接收各种信息
                         if (!mMediaSession.isActive()) {
                             mMediaSession.setActive(true);
                         }
+                        updateLocMsg();
+                        //onLockScreen();
                         //更新锁屏音乐信息
                         //if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
                         //onLockScreen();
@@ -357,7 +360,6 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     //用于定时发送音乐播放进度
-    //int reReceiverTime = 0;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -421,14 +423,6 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         Music music = app.getmList().get(app.getIdx() - 1);
 
         Notification notification = new Notification();
-
-        //解决Andorid8.0版本通知兼容问题
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("21120902", "21120902", NotificationManager.IMPORTANCE_HIGH);
-            manager.createNotificationChannel(channel);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "21120902");
-            notification = builder.build();
-        }
         notification.icon = R.mipmap.ic_launcher;
         notification.flags = Notification.FLAG_NO_CLEAR;
         //点击播放按钮发出的广播
@@ -509,7 +503,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
 
         //电话状态改变，控制暂停播放
-        public void callStateChanged(int status) {
+        void callStateChanged(int status) {
             //接听&响铃 -- 暂停
             if (status == Msg.CALL_IDLETOOFFHOOK || status == Msg.CALL_RINGING) {
                 if (mp != null && mp.isPlaying()) {
@@ -526,57 +520,6 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             }
         }
     };
-
-/*    public class MediaButtonIntentReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            String intentAction = intent.getAction();
-            if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
-                KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                if (event == null) return;
-                int keycode = event.getKeyCode();
-                switch (keycode) {
-                    case KeyEvent.KEYCODE_MEDIA_STOP:
-                        //CMD STOP
-                        break;
-                    case KeyEvent.KEYCODE_HEADSETHOOK:
-                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                        //CMD TOGGLE PAUSE
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_NEXT:
-                        //CMD NEXT 这里处理播放器逻辑 下一曲
-                        nextNum();
-                        play();
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                        //CMD PREVIOUS 这里处理播放器逻辑 上一曲
-                        lastNum();
-                        play();
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                        //CMD PAUSE 这里处理播放器逻辑 暂停
-                        mp.pause();
-                        senRefresh();  //通知activity更新信息
-                        musicNotification();  //更新状态栏信息
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PLAY:
-                        //CMD PLAY 这里处理播放器逻辑 播放
-                        //获取焦点
-                        int result = am.requestAudioFocus(afChangeListener,
-                                AudioManager.STREAM_MUSIC,
-                                AudioManager.AUDIOFOCUS_GAIN);
-                        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                            //播放音乐
-                            mp.start();
-                            senRefresh();  //通知activity更新信息
-                            musicNotification();  //更新状态栏信息
-                        }
-                        break;
-                }
-            }
-        }
-    }*/
 
     //媒体焦点监听
     int oldFocusState = 0;  //记录旧的状态
@@ -612,38 +555,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     };
 
-    //锁屏控制
-    public void onLockScreen() {
-        Music music = app.getmList().get(app.getIdx() - 1);
-        //同步当前的播放状态和播放时间
-        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder();
-        stateBuilder.setState(mp.isPlaying() ? 1 : 0, mp.getCurrentPosition(), speed);
-        mMediaSession.setPlaybackState(stateBuilder.build());
-
-        //同步歌曲信息
-        MediaMetadataCompat.Builder md = new MediaMetadataCompat.Builder();
-        md.putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getTitle());
-        md.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getArtist());
-        md.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum());
-        md.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getTime());
-        //专辑封面
-        String innerSDPath = new StorageUtil(this).innerSDPath();
-        String name = music.getName();
-        String toPath = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
-        File file = new File(toPath);
-        Bitmap bitmap;
-        if (file.exists()) {
-            bitmap = BitmapFactory.decodeFile(toPath);
-        } else {
-            bitmap = dao.getAlbumBitmap(music.getPath(), R.mipmap.album_default);
-        }
-        bitmap = ImageUtil.getimage(bitmap, 500f, 500f);
-        md.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, bitmap);
-
-        mMediaSession.setMetadata(md.build());
-    }
-
     //开启线控功能
+    PlaybackStateCompat.Builder stateBuilder;
+
     public void onDriveByWire() {
         //监听媒体按键
         mComponentName = new ComponentName(this, MediaButtonReceiver.class);
@@ -661,11 +575,11 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mMediaSession.setMediaButtonReceiver(mPendingIntent);
         //这里指定可以接收的来自锁屏页面的按键信息
-        PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(
+        stateBuilder = new PlaybackStateCompat.Builder().setActions(
                 PlaybackStateCompat.ACTION_FAST_FORWARD | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_PLAY
                         | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP).build();
-        mMediaSession.setPlaybackState(state);//在Android5.0及以后的版本中线控信息在这里处理
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP);
+        mMediaSession.setPlaybackState(stateBuilder.build());//在Android5.0及以后的版本中线控信息在这里处理
         mMediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public boolean onMediaButtonEvent(Intent intent) {
@@ -682,50 +596,79 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     }
 
-    //媒体按键监听
-/*    class MediaButtonReceiver extends BroadcastReceiver {
+    public void updateLocMsg() {
+        Music music = app.getmList().get(app.getIdx() - 1);
+        if (music == null) return;
+        try {
+            //同步歌曲信息
+            MediaMetadataCompat.Builder md = new MediaMetadataCompat.Builder();
+            //歌曲名
+            md.putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getTitle());
+            //歌手名
+            md.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getArtist());
+            //专辑名
+            md.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum());
+            //歌曲时长
+            md.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getTime());
+            //专辑封面
+            String innerSDPath = new StorageUtil(this).innerSDPath();
+            String name = music.getName();
+            String toPath = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
+            File file = new File(toPath);
+            Bitmap bitmap;
+            if (file.exists()) {
+                bitmap = BitmapFactory.decodeFile(toPath);
+            } else {
+                bitmap = dao.getAlbumBitmap(music.getPath(), R.mipmap.album_default);
+            }
+            bitmap = ImageUtil.getimage(bitmap, 350f, 350f);
+            md.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, bitmap);
+            mMediaSession.setMetadata(md.build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ScreenBroadcastReceiver mScreenReceiver;
+    private class ScreenBroadcastReceiver extends BroadcastReceiver {
+        private String action = null;
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Intent sBroadcast = new Intent();
-            sBroadcast.setAction("sBroadcast");
-            // 获得KeyEvent对象
-            KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-            if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
-                boolean isActionUp = (event.getAction() == KeyEvent.ACTION_UP);
-                // 这里会收到两次，我们只判断 up
-                if (!isActionUp) {
-                    return;
+            action = intent.getAction();
+            if(Intent.ACTION_SCREEN_ON.equals(action)) {
+                // 开屏
+                updateLocMsg();
+                if(app.getmList() != null && app.getIdx() != 0){
+                    if(mp.isPlaying()){
+                        updatePlaybackState(1);
+                    }else {
+                        updatePlaybackState(0);
+                    }
                 }
-                // 获得按键码
-                int keycode = event.getKeyCode();
-                switch (keycode) {
-                    case KeyEvent.KEYCODE_MEDIA_NEXT:
-                        //播放下一首
-                        sBroadcast.putExtra("what", Msg.PLAY_NEXT);
-                        context.sendBroadcast(sBroadcast);
-                        Log.d("MediaButton", "next");
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                        //播放上一首
-                        sBroadcast.putExtra("what", Msg.PLAY_LAST);
-                        context.sendBroadcast(sBroadcast);
-                        Log.d("MediaButton", "last");
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                    case KeyEvent.KEYCODE_MEDIA_PLAY:
-                        //中间按钮,暂停or播放
-                        //可以通过发送一个新的广播通知正在播放的视频页面,暂停或者播放视频
-                        sBroadcast.putExtra("what", Msg.PLAY_PAUSE);
-                        context.sendBroadcast(sBroadcast);
-                        Log.d("MediaButton", "playpluse");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            }/* else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                // 锁屏
+            } else if (Intent.ACTION_USER_PRESENT.equals(action)) {
+                // 解锁
+            }*/
         }
-    }*/
+    }
+
+    //开启锁屏监听
+    private void startScreenBroadcastReceiver() {
+        IntentFilter filter = new
+                IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(mScreenReceiver, filter);
+    }
+
+    public void updatePlaybackState(int currentState) {
+        int state = (currentState == 0) ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING;
+        //第三个参数必须为1，否则锁屏上面显示的时长会有问题
+        stateBuilder.setState(state, mp.getCurrentPosition(), 1.0f);
+        mMediaSession.setPlaybackState(stateBuilder.build());
+    }
 
     //完全退出应用
     public void exitApp() {
@@ -755,9 +698,10 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         //获取服务
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        //mKeyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+        //启用线控
         onDriveByWire();
-        //am.registerMediaButtonEventReceiver(mComponentName);
+        //启用锁屏监听
+        startScreenBroadcastReceiver();
         //定时刷新播放进度
         runnable.run();
 
@@ -773,8 +717,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         //注销广播
         try {
             unregisterReceiver(sBroadcast);
+            unregisterReceiver(mScreenReceiver);
         } catch (Exception e) {
-            Log.i("onDestroy", "sBroadcast已被清除");
+            Log.i("onDestroy", "广播已被清除");
         }
         //清除通知
         manager.cancel(21120902);

@@ -88,7 +88,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     //初始化播放模式
     public void initPlayMode(){
-        ImageView view = findViewById(R.id.playmodeBtn);
+        ImageView view = (ImageView) findViewById(R.id.playmodeBtn);
         pref = getSharedPreferences("pref", MODE_PRIVATE);
         int playmode = pref.getInt("playmode", 0);
         switch (playmode) {
@@ -130,14 +130,14 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     //初始化视图和元素
     public void initView() {
-        album = findViewById(R.id.album);
-        albumbg = findViewById(R.id.albumbg);
-        title = findViewById(R.id.title);
-        artist = findViewById(R.id.artist);
-        maxTime = findViewById(R.id.maxTime);
-        minTime = findViewById(R.id.minTime);
-        currentTime = findViewById(R.id.currentTime);
-        playBtn = findViewById(R.id.playBtn);
+        album = (ImageView) findViewById(R.id.album);
+        albumbg = (ImageView) findViewById(R.id.albumbg);
+        title = (TextView) findViewById(R.id.title);
+        artist = (TextView) findViewById(R.id.artist);
+        maxTime = (TextView) findViewById(R.id.maxTime);
+        minTime = (TextView) findViewById(R.id.minTime);
+        currentTime = (SeekBar) findViewById(R.id.currentTime);
+        playBtn = (ImageView) findViewById(R.id.playBtn);
         //dot1 = findViewById(R.id.dot1);
         //dot2 = findViewById(R.id.dot2);
         app = (mApplication) getApplicationContext();
@@ -158,7 +158,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
 
     //初始化viewPager
     public void initViewPager() {
-        viewPager = findViewById(R.id.viewPager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         //查找布局文件用LayoutInflater.inflate
         LayoutInflater inflater = getLayoutInflater();
         View view1 = inflater.inflate(R.layout.layout_album, null);
@@ -172,8 +172,8 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
         viewPager.setAdapter(mPagerAdapter);
         viewPager.addOnPageChangeListener(mPageChange);
 
-        lrcList = view2.findViewById(R.id.lyricList);
-        noLrc = view2.findViewById(R.id.nolrc);
+        lrcList = (ListView) view2.findViewById(R.id.lyricList);
+        noLrc = (TextView) view2.findViewById(R.id.nolrc);
 
         lrcList.setEnabled(false);
 
