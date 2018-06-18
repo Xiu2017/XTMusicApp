@@ -629,7 +629,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     }
 
-    private ScreenBroadcastReceiver mScreenReceiver;
+    private ScreenBroadcastReceiver mScreenReceiver = new ScreenBroadcastReceiver();
     private class ScreenBroadcastReceiver extends BroadcastReceiver {
         private String action = null;
         @Override
@@ -638,7 +638,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             if(Intent.ACTION_SCREEN_ON.equals(action)) {
                 // 开屏
                 updateLocMsg();
-                if(app.getmList() != null && app.getIdx() != 0){
+                if(app.getmList() != null){
                     if(mp.isPlaying()){
                         updatePlaybackState(1);
                     }else {
@@ -655,8 +655,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
 
     //开启锁屏监听
     private void startScreenBroadcastReceiver() {
-        IntentFilter filter = new
-                IntentFilter();
+        IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
@@ -666,7 +665,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     public void updatePlaybackState(int currentState) {
         int state = (currentState == 0) ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING;
         //第三个参数必须为1，否则锁屏上面显示的时长会有问题
-        stateBuilder.setState(state, mp.getCurrentPosition(), 1.0f);
+        stateBuilder.setState(state, mp.getCurrentPosition(), speed);
         mMediaSession.setPlaybackState(stateBuilder.build());
     }
 
