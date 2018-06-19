@@ -1196,7 +1196,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
                 String innerPath = new StorageUtil(MainActivity.this).innerSDPath();
-                innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/video-cache/";
+                innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/";
                 try {
                     FileUtils.delFolder(innerPath);
                     TastyToast.makeText(MainActivity.this, "清除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
