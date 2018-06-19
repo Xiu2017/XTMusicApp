@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         sBroadcast.putExtra("bass", bass);
         sendBroadcast(sBroadcast);
 
-        reverbItem.setTitle("环绕等级 " + reverb);
+        reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
         sBroadcast = new Intent();
         sBroadcast.setAction("sBroadcast");
         sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
@@ -155,9 +155,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //计算缓存大小
     public void cacheSize() {
         String innerPath = new StorageUtil(this).innerSDPath();
-        innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/video-cache/";
-        String size = FileSizeUtil.getAutoFileOrFilesSize(innerPath);
-        cacheItem.setTitle("清除缓存 " + size);
+        innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/";
+        File file = new File(innerPath);
+        if(file.exists()){
+            String size = FileSizeUtil.getAutoFileOrFilesSize(innerPath);
+            cacheItem.setTitle("清除缓存 " + size);
+        }
     }
 
     //初始化viewPager
@@ -1081,6 +1084,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 } else {
                     speed = 0.75f;
                 }
+                editor.putFloat("speed", speed);
                 editor.apply();
                 editor.commit();
                 item.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
@@ -1123,7 +1127,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 editor.putInt("reverb", reverb);
                 editor.apply();
                 editor.commit();
-                item.setTitle("环绕等级 " + reverb);
+                item.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
                 sBroadcast = new Intent();
                 sBroadcast.setAction("sBroadcast");
                 sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
@@ -1149,6 +1153,35 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
+    }
+
+    //混响等级转字符串
+    public String reverbToStr(int reverb){
+        String strReverb = "关闭";
+        switch (reverb){
+            case 0:
+                strReverb = "关闭";
+                break;
+            case 1:
+                strReverb = "小房间";
+                break;
+            case 2:
+                strReverb = "中房间";
+                break;
+            case 3:
+                strReverb = "大房间";
+                break;
+            case 4:
+                strReverb = "中厅";
+                break;
+            case 5:
+                strReverb = "大厅";
+                break;
+            case 6:
+                strReverb = "板式";
+                break;
+        }
+        return strReverb;
     }
 
     //清除缓存提示

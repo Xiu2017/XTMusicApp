@@ -11,6 +11,7 @@ import com.danikula.videocache.HttpProxyCacheServer;
 import com.xiu.entity.Music;
 import com.xiu.service.MusicService;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -43,9 +44,17 @@ public class mApplication extends Application {
 
     //Proxy设置
     private HttpProxyCacheServer newProxy() {
+        //缓存路径
+        String innerPath = new StorageUtil(this).innerSDPath();
+        innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/";
+        File file = new File(innerPath);
+        if(!file.exists()){
+            file.mkdirs();
+        }
         return new HttpProxyCacheServer.Builder(this)
-                .maxCacheSize(1024 * 1024 * 512)  //512M 缓存
-                .maxCacheFilesCount(100)  //最多缓存100首歌曲
+                .maxCacheSize(1024 * 1024 * 1024)  //1G 缓存
+                .maxCacheFilesCount(500)  //最多缓存500首歌曲
+                .cacheDirectory(file)
                 .build();
     }
 

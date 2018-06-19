@@ -297,6 +297,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         //启用低音和环绕
                         bassBoost();
                         presetReverb();
+                        changeplayerSpeed();
 /*                        new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -790,6 +791,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }*/
 
     //重低音
+    //范围 0 - 1000
     private BassBoost mBass;
     public void  bassBoost(){
         mBass = new BassBoost(0, mp.getAudioSessionId());
@@ -798,6 +800,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     //环绕音
+    //1 小房间 2 中房间 3 大房间 4 中厅 5 大厅 6 板式
     private PresetReverb mPresetReverb;
     public void presetReverb(){
         mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());

@@ -108,7 +108,7 @@ public class NeteaseMusic {
                                         } else if (!obj.isNull("l")) {
                                             size = obj.getJSONObject("l").getLong("size");
                                         }
-                                        music.setSize(size - (1024 * 768));
+                                        music.setSize(size/3*2);
                                         music.setTitle(obj.getString("name"));
                                         if (obj.getJSONArray("ar").isNull(1)) {
                                             music.setArtist(obj.getJSONArray("ar").getJSONObject(0).getString("name"));
