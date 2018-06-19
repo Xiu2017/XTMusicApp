@@ -149,7 +149,7 @@ public class SearchListAdapter extends BaseAdapter {
                     musicItem.musicPath.setText("已缓存");
                 }else {
                 }*/
-                musicItem.musicPath.setText(df.format(temp));
+                musicItem.musicPath.setText(temp < 0.01f ? "未知" : df.format(temp));
             }
 
             return view;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.xiu.dao.MusicDao;
 import com.xiu.entity.Msg;
@@ -21,8 +22,10 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -32,11 +35,11 @@ import okhttp3.Response;
 public class QQMusic {
 
     private Context context;
-    private MusicDao dao;
+    //private MusicDao dao;
 
     public QQMusic(Context context) {
         this.context = context;
-        this.dao = new MusicDao(context);
+        //this.dao = new MusicDao(context);
     }
 
     //查询列表
@@ -88,7 +91,6 @@ public class QQMusic {
                             Music music = new Music();
 
                             String[] arr = obj.getString("f").split("\\|");
-                            //Log.d("arr", obj.getString("f")+"");
                             //String unstr = obj.getString("f").replace("&amp;#", "%u");
                             //Log.d("unstr", unstr+"");
                             String lrcId;
@@ -107,7 +109,8 @@ public class QQMusic {
                             }
                             music.setLyric(lrcId);
                             music.setPath(id);
-                            music.setSize(Long.parseLong(size)/5-10240);
+                            //5-10240
+                            music.setSize(size.equals("0") ? 0 : Long.parseLong(size));
                             music.setAlbumPath(albumId);
                             music.setTime(time);
 
@@ -163,15 +166,72 @@ public class QQMusic {
             return;
         }
 
-        final String url = "http://base.music.qq.com/fcgi-bin/fcg_musicexpress.fcg?json=3&loginUin=0&format=jsonp&inCharset=GB2312&outCharset=GB2312&notice=0&platform=yqq&needNewCode=0";
+        String url = "http://www.douqq.com/qqmusic/qqapi.php";
         //构建一个请求对象
-        Request request = new Request.Builder().url(url).build();
+        RequestBody formBody = new FormBody.Builder().add("mid", music.getPath()).build();
+        Request request = new Request.Builder().url(url).post(formBody).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient().newCall(request);
         //异步执行请求
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@Nullable Call call, @NonNull IOException e) {
+                bakMusicUrl(music);
+            }
+
+            @Override
+            public void onResponse(@Nullable Call call, @NonNull Response response) throws IOException {
+                //通过response得到服务器响应内容
+                String str = response.body().string()
+                        .replace("\"{","{")
+                        .replace("}\"","}")
+                        .replace("\\","");
+                Log.d("str", str);
+                try {
+                    JSONObject json = new JSONObject(str);
+                    String path = json.getString("mp3_l");
+                    if(path == null || path.isEmpty()){
+                        bakMusicUrl(music);
+                    }else {
+                        music.setPath(path);
+                        music.setName(music.getName().replace("m4a","mp3"));
+
+                        //拼接专辑图片链接
+                        String albumId = music.getAlbumPath();
+                        String albumUrl = null;
+                        if(albumId.length() > 2){
+                            albumUrl = "http://imgcache.qq.com/music/photo/mid_album_500/"
+                                    + albumId.substring(albumId.length() - 2, albumId.length() - 1) + "/"
+                                    + albumId.substring(albumId.length() - 1, albumId.length()) + "/"
+                                    + albumId + ".jpg";
+                        }
+                        music.setAlbumPath(albumUrl);
+
+                        //拼接歌词链接 -- 有时间再做
+
+                        Intent kBroadcast = new Intent();
+                        kBroadcast.setAction("sBroadcast");
+                        kBroadcast.putExtra("what", Msg.GET_MUSIC_PATH);
+                        kBroadcast.putExtra("music", music);
+                        context.sendBroadcast(kBroadcast);
+                    }
+                } catch (JSONException e) {
+                    bakMusicUrl(music);
+                }
+            }
+        });
+    }
+
+    private void bakMusicUrl(final Music music){
+        String url = "http://base.music.qq.com/fcgi-bin/fcg_musicexpress.fcg?json=3&loginUin=0&format=jsonp&inCharset=GB2312&outCharset=GB2312&notice=0&platform=yqq&needNewCode=0";
+        Request request = new Request.Builder().url(url).build();
+        //构建一个Call对象
+        okhttp3.Call call = new OkHttpClient().newCall(request);
+        //异步执行请求
+        call.enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
                 Intent kBroadcast = new Intent();
                 kBroadcast.setAction("sBroadcast");
                 kBroadcast.putExtra("what", Msg.GET_MUSIC_ERROR);
@@ -180,13 +240,11 @@ public class QQMusic {
             }
 
             @Override
-            public void onResponse(@Nullable Call call, @NonNull Response response) throws IOException {
-                //通过response得到服务器响应内容
+            public void onResponse(Call call, Response response) throws IOException {
                 String str = response.body().string();
-                str = str.replace("jsonCallback(", "").replace(");", "");
                 try {
+                    str = str.replace("jsonCallback(", "").replace(");", "");
                     JSONObject json = new JSONObject(str);
-
                     //根据获取到的key值拼接音乐链接
                     String urlstr = json.getString("sip");
                     //Log.d("sip", urlstr);
@@ -201,13 +259,14 @@ public class QQMusic {
 
                     //拼接专辑图片链接
                     String albumId = music.getAlbumPath();
-                    String albumUrl = "http://imgcache.qq.com/music/photo/mid_album_500/"
-                            + albumId.substring(albumId.length() - 2, albumId.length() - 1) + "/"
-                            + albumId.substring(albumId.length() - 1, albumId.length()) + "/"
-                            + albumId + ".jpg";
+                    String albumUrl = null;
+                    if(albumId.length() > 2){
+                        albumUrl = "http://imgcache.qq.com/music/photo/mid_album_500/"
+                                + albumId.substring(albumId.length() - 2, albumId.length() - 1) + "/"
+                                + albumId.substring(albumId.length() - 1, albumId.length()) + "/"
+                                + albumId + ".jpg";
+                    }
                     music.setAlbumPath(albumUrl);
-
-                    //拼接歌词链接 -- 有时间再做
 
                     Intent kBroadcast = new Intent();
                     kBroadcast.setAction("sBroadcast");

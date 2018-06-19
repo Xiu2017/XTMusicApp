@@ -160,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         if(file.exists()){
             String size = FileSizeUtil.getAutoFileOrFilesSize(innerPath);
             cacheItem.setTitle("清除缓存 " + size);
+        }else {
+            cacheItem.setTitle("清除缓存 0B");
         }
     }
 
