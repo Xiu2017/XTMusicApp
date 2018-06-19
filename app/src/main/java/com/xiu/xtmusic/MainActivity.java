@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -63,6 +64,7 @@ import com.xiu.dialog.MusicInfoDialog;
 import com.xiu.entity.Msg;
 import com.xiu.entity.Music;
 import com.xiu.utils.AudioUtil;
+import com.xiu.utils.FileSizeUtil;
 import com.xiu.utils.FileUtils;
 import com.xiu.utils.ImageUtil;
 import com.xiu.utils.StorageUtil;
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private boolean isTimer;
     private boolean update;
     private MusicDao dao;
-    private MenuItem timerItem;
+    private MenuItem timerItem, speedItem, bassItem, reverbItem, cacheItem;
     private Dialog dialog;
     private ContentResolver contentResolver;
     private MyObserver observer;
@@ -98,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private View localTab, historyTab;  //选项卡：本地，历史
     private ViewPager viewPager;  //页视图
 
-    private float speed = 1.00f;  //播放速度
-    private float pitch = 1.00f;  //音调
+    //private float speed = 1.00f;  //播放速度
+    //private float pitch = 1.00f;  //音调
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +119,45 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         initList();  //初始化列表
         initRegister();  //注册内容观察者,当媒体数据库发生变化时,更新音乐列表
         initAnim();  //初始化专辑旋转动画
+        initData();  //初始化持久化数据
+        cacheSize();  //计算缓存大小
+    }
+
+    //初始化持久化数据
+    public void initData() {
+        SharedPreferences pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
+        float speed = pref.getFloat("speed", 1.0f);
+        int bass = pref.getInt("bass", 0);
+        int reverb = pref.getInt("reverb", 0);
+
+        speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
+        sBroadcast = new Intent();
+        sBroadcast.setAction("sBroadcast");
+        sBroadcast.putExtra("what", Msg.PLAY_SPEED);
+        sBroadcast.putExtra("speed", speed);
+        sendBroadcast(sBroadcast);
+
+        bassItem.setTitle("低音增益 " + bass);
+        sBroadcast = new Intent();
+        sBroadcast.setAction("sBroadcast");
+        sBroadcast.putExtra("what", Msg.BASS_LEVEL);
+        sBroadcast.putExtra("bass", bass);
+        sendBroadcast(sBroadcast);
+
+        reverbItem.setTitle("环绕等级 " + reverb);
+        sBroadcast = new Intent();
+        sBroadcast.setAction("sBroadcast");
+        sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
+        sBroadcast.putExtra("reverb", reverb);
+        sendBroadcast(sBroadcast);
+    }
+
+    //计算缓存大小
+    public void cacheSize() {
+        String innerPath = new StorageUtil(this).innerSDPath();
+        innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/video-cache/";
+        String size = FileSizeUtil.getAutoFileOrFilesSize(innerPath);
+        cacheItem.setTitle("清除缓存 " + size);
     }
 
     //初始化viewPager
@@ -214,6 +255,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         navigationView.setNavigationItemSelectedListener(this);
 
         timerItem = navigationView.getMenu().getItem(1);
+        speedItem = navigationView.getMenu().getItem(2);
+        bassItem = navigationView.getMenu().getItem(3);
+        reverbItem = navigationView.getMenu().getItem(4);
+        cacheItem = navigationView.getMenu().getItem(5);
     }
 
     //初始化沉浸式状态栏
@@ -397,6 +442,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //刷新剩余退出时间
     int interval = 10;
+
     public void refreshTime(long time) {
         time = time - System.currentTimeMillis();
         if (isTimer) {
@@ -407,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 } else {
                     interval += 1;
                 }
-            }else {
+            } else {
                 timerItem.setTitle("取消定时器（00:00）");
             }
         }
@@ -626,10 +672,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 TastyToast.makeText(this, "文件不存在", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
                 return;
             }
-            intent.setType("audio/*");
-            Uri uri = Uri.fromFile(file);
+            //Uri uri = Uri.fromFile(file);
+            Uri uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
             intent.putExtra(Intent.EXTRA_STREAM, uri);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setType("audio/*");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(intent, "分享音乐文件"));
         }
     }
@@ -657,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //暂停&播放
     public void playPause(View view) {
         if (app.getmList() != null && app.getmList().size() != 0 && app.getMp() != null) {
-            try{
+            try {
                 if (app.getMp().isPlaying()) {
                     app.getMp().pause();
                     albumRotate(STOP);
@@ -667,8 +715,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     albumRotate(START);
                     playBtn.setImageResource(R.mipmap.pause_red);
                 }
-            }catch (IllegalStateException e){
-                Log.d("playPause","MediaPlayer状态异常");
+            } catch (IllegalStateException e) {
+                Log.d("playPause", "MediaPlayer状态异常");
             }
         }
         sBroadcast = new Intent();
@@ -715,7 +763,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     public void refresh() {
         if (app.getmList() == null || app.getmList().size() == 0 || app.getIdx() == 0) {
-            try{
+            try {
                 if (app.getmList() != null && app.getmList().size() == 0 && app.getMp() != null && app.getMp().isPlaying()) {
                     app.getMp().pause();
                     emptyList.setVisibility(View.VISIBLE);
@@ -724,8 +772,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     sBroadcast.putExtra("what", Msg.NOTIFICATION_REFRESH);
                     sendBroadcast(sBroadcast);
                 }
-            }catch (IllegalStateException e){
-                Log.d("refresh","MediaPlayer状态异常");
+            } catch (IllegalStateException e) {
+                Log.d("refresh", "MediaPlayer状态异常");
             }
             title.setText("炫听音乐");
             artist.setText("炫酷生活");
@@ -753,7 +801,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         setAlbum(new File(toPath), music.getPath());
 
         //播放按钮的更新
-        try{
+        try {
             if (app.getMp() != null && app.getMp().isPlaying()) {
                 playBtn.setImageResource(R.mipmap.pause_red);
                 albumRotate(START);
@@ -761,8 +809,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 playBtn.setImageResource(R.mipmap.play_red);
                 albumRotate(STOP);
             }
-        }catch (IllegalStateException e){
-            Log.d("refresh","MediaPlayer状态异常");
+        } catch (IllegalStateException e) {
+            Log.d("refresh", "MediaPlayer状态异常");
         }
 
         list.clear();
@@ -781,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                         .load(file)
                         .resize(100, 100)
                         .into(album);*/
-        }else {
+        } else {
             album.setImageBitmap(ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.logo_red), 150f, 150f));
         }
     }
@@ -893,7 +941,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         if (list != null && list.size() > 0 && app.getIdx() > 0) {
             int time = list.get(app.getIdx() - 1).getTime();
             if (currentTime.getMax() != time)
-            currentTime.setMax(time);
+                currentTime.setMax(time);
             currentTime.setProgress(Math.round(current));
         }
     }
@@ -970,6 +1018,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 SharedPreferences sharedPreferences = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
                 SharedPreferences.Editor editor = sharedPreferences.edit();//获取编辑器
                 editor.putString("treeUri", treeUri.toString());
+                editor.apply();
                 editor.commit();
                 TastyToast.makeText(this, "获取外置SD卡读写权限成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
             } else {
@@ -997,22 +1046,70 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 }
                 break;
             case R.id.nav_speed:
-                if(app.getMp() == null) break;
+                if (app.getMp() == null) break;
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     TastyToast.makeText(this, "仅支持安卓6以上版本", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
                     break;
                 }
-                if(speed < 1.45){
+                pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
+                float speed = pref.getFloat("speed", 1.0f);
+                editor = pref.edit();//获取编辑器
+                if (speed < 1.45) {
                     speed += 0.05f;
-                }else {
+                } else {
                     speed = 0.75f;
                 }
-                item.setTitle("播放速度 "+(float)(Math.round(speed*100))/100);
+                editor.apply();
+                editor.commit();
+                item.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
                 sBroadcast = new Intent();
                 sBroadcast.setAction("sBroadcast");
                 sBroadcast.putExtra("what", Msg.PLAY_SPEED);
-                sBroadcast.putExtra("speed",speed);
+                sBroadcast.putExtra("speed", speed);
                 sendBroadcast(sBroadcast);
+                break;
+            case R.id.nav_bass:
+                if (app.getMp() == null) break;
+                pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
+                int bass = (int) pref.getInt("bass", 0);
+                editor = pref.edit();//获取编辑器
+                if (bass < 10) {
+                    bass++;
+                } else {
+                    bass = 0;
+                }
+                editor.putInt("bass", bass);
+                editor.apply();
+                editor.commit();
+                item.setTitle("低音增益 " + bass);
+                sBroadcast = new Intent();
+                sBroadcast.setAction("sBroadcast");
+                sBroadcast.putExtra("what", Msg.BASS_LEVEL);
+                sBroadcast.putExtra("bass", bass);
+                sendBroadcast(sBroadcast);
+                break;
+            case R.id.nav_reverb:
+                if (app.getMp() == null) break;
+                pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
+                int reverb = pref.getInt("reverb", 0);
+                editor = pref.edit();//获取编辑器
+                if (reverb < 6) {
+                    reverb++;
+                } else {
+                    reverb = 0;
+                }
+                editor.putInt("reverb", reverb);
+                editor.apply();
+                editor.commit();
+                item.setTitle("环绕等级 " + reverb);
+                sBroadcast = new Intent();
+                sBroadcast.setAction("sBroadcast");
+                sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
+                sBroadcast.putExtra("reverb", reverb);
+                sendBroadcast(sBroadcast);
+                break;
+            case R.id.nav_cache:
+                cleanCacheTips();
                 break;
             case R.id.nav_about:
                 Intent intent = new Intent(MainActivity.this, AboutActivity.class);
@@ -1026,10 +1123,43 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
         //收起侧边栏
         int itemId = item.getItemId();
-        if (itemId != R.id.nav_speed) {
+        if (itemId != R.id.nav_speed && itemId != R.id.nav_bass && itemId != R.id.nav_reverb && itemId != R.id.nav_cache) {
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
+    }
+
+    //清除缓存提示
+    public void cleanCacheTips() {
+        //自定义控件
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        //设置time布局
+        builder.setTitle("清除缓存说明");
+        builder.setMessage("清除缓存后，播放历史列表的歌曲需要重新联网缓存，且因歌曲链接的时效性，有可能无法重新缓存，是否继续？");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                String innerPath = new StorageUtil(MainActivity.this).innerSDPath();
+                innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/video-cache/";
+                try {
+                    FileUtils.delFolder(innerPath);
+                    TastyToast.makeText(MainActivity.this, "清除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+                    cacheSize();
+                    historyAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    TastyToast.makeText(MainActivity.this, "清除失败", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+                    e.printStackTrace();
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.create().show();
     }
 
     //内容观察者,观察媒体数据库的变化,实时更新音乐列表

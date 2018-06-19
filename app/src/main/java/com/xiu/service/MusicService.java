@@ -15,6 +15,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.BassBoost;
+import android.media.audiofx.PresetReverb;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,10 +45,12 @@ import com.xiu.xtmusic.AlbumActivity;
 import com.xiu.xtmusic.R;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -77,6 +81,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
 
     private AudioManager am;
     private float speed = 1.0f;
+    private int bass = 0;
+    private int reverb = 0;
 
     //广播接收
     BroadcastReceiver sBroadcast = new BroadcastReceiver() {
@@ -142,7 +148,21 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         break;
                     case Msg.PLAY_SPEED:
                         speed = intent.getFloatExtra("speed", 1.0f);
-                        changeplayerSpeed();
+                        if(mp != null){
+                            changeplayerSpeed();
+                        }
+                        break;
+                    case Msg.BASS_LEVEL:
+                        bass = intent.getIntExtra("bass",0);
+                        if(mp != null){
+                            bassBoost();
+                        }
+                        break;
+                    case Msg.REVERB_LEVEL:
+                        reverb = intent.getIntExtra("reverb", 0);
+                        if(mp != null){
+                            presetReverb();
+                        }
                         break;
                     case Msg.CLOSE:
                         exitApp();
@@ -165,6 +185,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                     mp.pause();
                 }
             } catch (Exception e) {
+                //某些机型某些系统可能不支持，但不影响应用本身，所以可以忽略错误
                 //e.printStackTrace();
                 //TastyToast.makeText(app, "发生错误：" + e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
             }
@@ -245,7 +266,6 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         if (mp == null)
             mp = new MediaPlayer();
         app.setMp(mp);
-
         try {
             mp.reset();
             mp.setDataSource(path);
@@ -274,6 +294,15 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                             mMediaSession.setActive(true);
                         }
                         updateLocMsg();
+                        //启用低音和环绕
+                        bassBoost();
+                        presetReverb();
+/*                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setPresetReverb();
+                            }
+                        }).start();*/
                         //onLockScreen();
                         //更新锁屏音乐信息
                         //if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
@@ -597,6 +626,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     public void updateLocMsg() {
+        if(app.getmList() == null || app.getmList().size() == 0 || app.getIdx() == 0) return;
         Music music = app.getmList().get(app.getIdx() - 1);
         if (music == null) return;
         try {
@@ -630,19 +660,26 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     }
 
     private ScreenBroadcastReceiver mScreenReceiver = new ScreenBroadcastReceiver();
+
     private class ScreenBroadcastReceiver extends BroadcastReceiver {
         private String action = null;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
-            if(Intent.ACTION_SCREEN_ON.equals(action)) {
+            if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 // 开屏
                 updateLocMsg();
-                if(app.getmList() != null){
-                    if(mp.isPlaying()){
-                        updatePlaybackState(1);
-                    }else {
-                        updatePlaybackState(0);
+                if (app.getmList() != null && app.getmList().size() != 0 && app.getIdx() > 0) {
+                    try {
+                        boolean isPlaying = mp.isPlaying();
+                        if (isPlaying) {
+                            updatePlaybackState(1);
+                        } else {
+                            updatePlaybackState(0);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
             }/* else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
@@ -662,11 +699,110 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         registerReceiver(mScreenReceiver, filter);
     }
 
+    //更新锁屏播放状态
     public void updatePlaybackState(int currentState) {
         int state = (currentState == 0) ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING;
         //第三个参数必须为1，否则锁屏上面显示的时长会有问题
         stateBuilder.setState(state, mp.getCurrentPosition(), speed);
         mMediaSession.setPlaybackState(stateBuilder.build());
+    }
+
+    //环绕音
+/*    private PresetReverb mPresetReverb;
+    public void setPresetReverb() {
+        //启用重低音
+        bassBoost();
+        mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());
+        mPresetReverb.setEnabled(true);
+        isRun = false;
+        float right = 0.5f;
+        while (right >= 0.1f){
+            right -= 0.05f;
+            mp.setVolume(1.0f,right);
+            SystemClock.sleep(50);
+        }
+        isRun = true;
+
+        //mPresetReverb.setPreset(PresetReverb.PRESET_SMALLROOM);
+*//*        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //启用环绕卷积
+                presetReverb();
+            }
+        }).start();*//*
+        //启用左右卷积
+        leftRight();
+    }
+
+    //环绕声卷积
+    public void presetReverb(){
+        short level = 1;
+        boolean tag = false;
+        while (isRun){
+            SystemClock.sleep(Math.round(Math.random()*200)+100);
+            if(level <= 5 && !tag){
+                level++;
+                if(level == 5) tag = true;
+            }else if(level >= 1 && tag){
+                level--;
+                if(level == 1) tag = false;
+            }
+            mPresetReverb.setPreset(level);
+        }
+    }
+
+    //左右声道卷积
+    boolean isRun = false;
+    public void leftRight(){
+        float left = 1.0f, right = 0.05f;
+        boolean tag = true;
+        float step;
+        while (isRun){
+            SystemClock.sleep(Math.round(Math.random()*250)+50);
+            if(left > 0.3f || left < 0.7f || right > 0.3f || right < 0.7f){
+                step = 0.025f;
+            }else {
+                step = 0.01f;
+            }
+            if(left >= 0.05f && tag){
+                if(left > 0.1f)
+                    left -= step;
+                right += step;
+                mPresetReverb.setPreset((short)(Math.round(Math.abs(left-right)*5)));
+                if (right >= 1.0f) tag = false;
+            }else if(right >= 0.05f && !tag){
+                if(right > 0.1f)
+                    right -= step;
+                left += step;
+                mPresetReverb.setPreset((short)(Math.round(Math.abs(right-left)*5)));
+                if (left >= 1.0f) tag = true;
+            }
+            final float lt = left;
+            final float rt = right;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mp.setVolume(lt,rt);
+                }
+            }).start();
+        }
+    }*/
+
+    //重低音
+    private BassBoost mBass;
+    public void  bassBoost(){
+        mBass = new BassBoost(0, mp.getAudioSessionId());
+        mBass.setEnabled(true);
+        mBass.setStrength((short) (bass*1000));
+    }
+
+    //环绕音
+    private PresetReverb mPresetReverb;
+    public void presetReverb(){
+        mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());
+        mPresetReverb.setEnabled(true);
+        mPresetReverb.setPreset((short) reverb);
     }
 
     //完全退出应用
@@ -688,7 +824,6 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         filter.addAction("sBroadcast");
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(sBroadcast, filter);
-
 
         //注册电话监听
         TelephonyManager tm = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
@@ -724,6 +859,12 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         manager.cancel(21120902);
         //移除hander回调函数和消息
         handler.removeCallbacksAndMessages(null);
+        if(mPresetReverb != null){
+            mPresetReverb.release();
+        }
+        if(mBass != null){
+            mBass.release();
+        }
         //释放MediaPlay
         if (mp != null) {
             mp.reset();

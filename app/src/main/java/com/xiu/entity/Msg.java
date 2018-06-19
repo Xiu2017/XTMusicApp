@@ -37,4 +37,6 @@ public class Msg {
     public static final int SWITCH_MODE = 1027;  //切换播放模式
     public static final int PLAY_SPEED = 1028;  //播放速度
     public static final int PLAY_PITCH = 1029;  //音调
+    public static final int BASS_LEVEL = 1030;  //低音增益
+    public static final int REVERB_LEVEL = 1031;  //环绕等级
 }

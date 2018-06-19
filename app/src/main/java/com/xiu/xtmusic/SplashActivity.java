@@ -38,6 +38,7 @@ public class SplashActivity extends Activity {
 
     //配置需要取的权限
     static final String[] PERMISSION = new String[]{
+            Manifest.permission.RECORD_AUDIO,  //录音权限
             Manifest.permission.WRITE_EXTERNAL_STORAGE,  // 写入权限
             Manifest.permission.READ_PHONE_STATE,  //电话状态读取权限
             Manifest.permission.INTERNET  //网络访问权限

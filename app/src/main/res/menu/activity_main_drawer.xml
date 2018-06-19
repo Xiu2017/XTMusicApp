@@ -12,12 +12,20 @@
         android:title="定时退出" />
     <item
         android:id="@+id/nav_speed"
-        android:icon="@mipmap/nav_setting"
+        android:icon="@mipmap/ic_speed"
         android:title="播放速度 1.0" />
-    <!--    <item
-            android:id="@+id/nav_pitch"
-            android:icon="@mipmap/ic_remind"
-            android:title="音阶调节 1.0" />-->
+    <item
+        android:id="@+id/nav_bass"
+        android:icon="@mipmap/ic_equalizer"
+        android:title="低音增益 0" />
+    <item
+        android:id="@+id/nav_reverb"
+        android:icon="@mipmap/ic_reverb"
+        android:title="环绕等级 0" />
+    <item
+        android:id="@+id/nav_cache"
+        android:icon="@mipmap/ic_cache"
+        android:title="清除缓存 0MB" />
     <item
         android:id="@+id/nav_about"
         android:icon="@mipmap/nav_about"
