@@ -332,6 +332,28 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         hunt = (ImageView) findViewById(R.id.hunt);
         musicSize = (TextView) findViewById(R.id.musicSize);
         musicName = (TextView) findViewById(R.id.musicName);
+
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                cacheSize();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
     //viewpager切换到指定item

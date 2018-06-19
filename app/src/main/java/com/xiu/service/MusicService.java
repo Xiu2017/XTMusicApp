@@ -794,7 +794,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     public void  bassBoost(){
         mBass = new BassBoost(0, mp.getAudioSessionId());
         mBass.setEnabled(true);
-        mBass.setStrength((short) (bass*1000));
+        mBass.setStrength((short) (bass*100));
     }
 
     //环绕音
