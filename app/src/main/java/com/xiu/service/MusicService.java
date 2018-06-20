@@ -80,7 +80,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //private KeyguardManager mKeyguardManager;
 
     private AudioManager am;
-    private int speed = 25;
+    private int speed = 50;
+    private int pitch = 50;
     private int bass = 0;
     private int reverb = 0;
 
@@ -146,8 +147,11 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                     case Msg.PLAY_KUGOU_MUSIC:
                         play();
                         break;
-                    case Msg.PLAY_SPEED:
-                        speed = intent.getIntExtra("speed", 25);
+                    case Msg.SPEED_PITCH:
+                        int sp = intent.getIntExtra("speed", -1);
+                        if(sp != -1) speed = sp;
+                        int pi = intent.getIntExtra("pitch", -1);
+                        if(pi != -1) pitch = pi;
                         if(mp != null){
                             changeplayerSpeed();
                         }
@@ -177,12 +181,13 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         // this checks on API 23 and up6.0以上
         if (mp == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            float sp = (speed+75)/100.0f;
+            float sp = (speed+50)/100.0f;
+            float pi = (pitch+50)/100.0f;
             try {
                 if (mp.isPlaying()) {
-                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(sp));
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(pi));
                 } else {
-                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(sp));
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(pi));
                     mp.pause();
                 }
             } catch (Exception e) {
@@ -705,7 +710,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     public void updatePlaybackState(int currentState) {
         int state = (currentState == 0) ? PlaybackStateCompat.STATE_PAUSED : PlaybackStateCompat.STATE_PLAYING;
         //第三个参数必须为1，否则锁屏上面显示的时长会有问题
-        stateBuilder.setState(state, mp.getCurrentPosition(), speed);
+        stateBuilder.setState(state, mp.getCurrentPosition(), (speed+75)/100.0f);
         mMediaSession.setPlaybackState(stateBuilder.build());
     }
 

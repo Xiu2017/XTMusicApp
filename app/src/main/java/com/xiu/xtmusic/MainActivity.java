@@ -133,15 +133,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             editor.apply();
             editor.commit();
         }else {
-            int speed = pref.getInt("speed", 25);
+            int speed = pref.getInt("speed", 50);
+            int pitch = pref.getInt("pitch", 50);
             int bass = pref.getInt("bass", 0);
             int reverb = pref.getInt("reverb", 0);
 
             //speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
             sBroadcast = new Intent();
             sBroadcast.setAction("sBroadcast");
-            sBroadcast.putExtra("what", Msg.PLAY_SPEED);
+            sBroadcast.putExtra("what", Msg.SPEED_PITCH);
             sBroadcast.putExtra("speed", speed);
+            sBroadcast.putExtra("pitch", pitch);
             sendBroadcast(sBroadcast);
 
             //bassItem.setTitle("低音增益 " + bass);
@@ -1119,12 +1121,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 sBroadcast.putExtra("reverb", reverb);
                 sendBroadcast(sBroadcast);
                 break;*/
+            case R.id.nav_playsetting:
+                Intent sa = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(sa);
+                break;
             case R.id.nav_cache:
                 cleanCacheTips();
                 break;
             case R.id.nav_about:
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
+                Intent aa = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(aa);
                 break;
             case R.id.nav_exit:
                 //收起侧边栏

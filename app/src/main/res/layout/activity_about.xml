@@ -2,16 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/colorBackground">
+    android:background="@color/colorBackground"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:id="@+id/author"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,124 +32,13 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_centerVertical="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:gravity="center"
-                android:text="播放速度"
-                android:textSize="12sp" />
-
-            <SeekBar
-                android:id="@+id/speedSB"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="50dp"
-                android:layout_marginStart="50dp"
-                android:max="75"
-                android:progress="25"
-                android:saveEnabled="false" />
-
-            <TextView
-                android:id="@+id/speedTV"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:text="1.0"
-                android:textSize="12sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:gravity="center"
-                android:text="低音增益"
-                android:textSize="12sp" />
-
-            <SeekBar
-                android:id="@+id/bassSB"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="50dp"
-                android:layout_marginStart="50dp"
-                android:max="6"
-                android:progress="0" />
-
-            <TextView
-                android:id="@+id/bassTV"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:text="0"
-                android:textSize="12sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:gravity="center"
-                android:text="混响"
-                android:textSize="12sp" />
-
-            <SeekBar
-                android:id="@+id/reverbSB"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="50dp"
-                android:layout_marginStart="50dp"
-                android:max="6"
-                android:progress="0" />
-
-            <TextView
-                android:id="@+id/reverbTV"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:text="关闭"
-                android:textSize="12sp" />
-        </RelativeLayout>
-
-        <Button
-            android:text="重置"
-            android:textSize="15sp"
-            android:onClick="resetAll"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
     <TextView
         android:id="@+id/statement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="@string/tip"
         android:textColor="@android:color/darker_gray"

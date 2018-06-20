@@ -14,6 +14,7 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -224,11 +225,12 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(Intent.createChooser(intent, "分享音乐链接"));
                     } else {
-                        intent.setType("audio/*");
                         File file = new File(music.getPath());
-                        Uri uri = Uri.fromFile(file);
+                        Uri uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
                         intent.putExtra(Intent.EXTRA_STREAM, uri);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setType("audio/*");
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         startActivity(Intent.createChooser(intent, "分享音乐文件"));
                     }
                 }

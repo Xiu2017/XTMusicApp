@@ -55,5 +55,6 @@
         - 支持查看歌曲信息\n
         - 有任何问题都可以联系1530980540@qq.com
     </string>
-    <string name="header">祝福你,\n没我打扰会更好</string>
+    <string name="header">祝福你\n没我打扰会更好</string>
+    <string name="setting">除非是相爱\n否则你所做的所有都是徒劳</string>
 </resources>

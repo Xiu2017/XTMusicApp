@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xiu.xtmusic">
+
     <!-- 使用音场效果必要的权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -27,6 +28,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
@@ -67,10 +69,12 @@
         <activity android:name=".CommentActivity" />
 
         <receiver android:name="com.xiu.service.MediaButtonReceiver">
-            <intent-filter >
-                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".SettingActivity"></activity>
     </application>
 
 </manifest>

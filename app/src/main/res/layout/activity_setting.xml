@@ -1,0 +1,160 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/setting"
+        android:textColor="#50C80000"
+        android:textSize="26sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="播放速度"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/speedSB"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:max="100"
+            android:progress="50"
+            android:saveEnabled="false" />
+
+        <TextView
+            android:id="@+id/speedTV"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="1.0"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="音高调节"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/pitchSB"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:max="100"
+            android:progress="50"
+            android:saveEnabled="false" />
+
+        <TextView
+            android:id="@+id/pitchTV"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="1.0"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:checked="true"
+        android:text="绑定速度和音高"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="低音增益"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/bassSB"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:max="10"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/bassTV"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="0"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="混响"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/reverbSB"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:max="6"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/reverbTV"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="关闭"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:onClick="resetAll"
+        android:text="重置"
+        android:textSize="15sp" />
+
+</LinearLayout>

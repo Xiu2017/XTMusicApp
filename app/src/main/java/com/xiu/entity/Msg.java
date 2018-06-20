@@ -39,4 +39,5 @@ public class Msg {
     public static final int PLAY_PITCH = 1029;  //音调
     public static final int BASS_LEVEL = 1030;  //低音增益
     public static final int REVERB_LEVEL = 1031;  //环绕等级
+    public static final int SPEED_PITCH = 1032;  //速度和音高
 }
