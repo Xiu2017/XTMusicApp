@@ -40,4 +40,9 @@ public class Msg {
     public static final int BASS_LEVEL = 1030;  //低音增益
     public static final int REVERB_LEVEL = 1031;  //环绕等级
     public static final int SPEED_PITCH = 1032;  //速度和音高
+
+    public static final int UPDATE_ERROR = 1033; //更新失败
+    public static final int UPDATE_ISNEW = 1034; //已是最新版本
+    public static final int UPDATE_NEW = 1035;  //有新版本
+    public static final int MTASKID = 1036;  //下载id
 }

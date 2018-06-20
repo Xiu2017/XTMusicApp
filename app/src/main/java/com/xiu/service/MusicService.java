@@ -1,5 +1,6 @@
 package com.xiu.service;
 
+import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,12 +12,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.PresetReverb;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,6 +27,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -79,6 +83,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     private MediaSessionCompat mMediaSession;
     //private KeyguardManager mKeyguardManager;
 
+    private long mTaskId;
+
     private AudioManager am;
     private int speed = 50;
     private int pitch = 50;
@@ -98,6 +104,17 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         senRefresh();
                         musicNotification();
                     }
+                }
+            }else if(DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)){
+                //下载进度
+                Log.d("str", action+","+mTaskId);
+                DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager.Query query = new DownloadManager.Query();
+                //在广播中取出下载任务的id
+                query.setFilterById(mTaskId);
+                Cursor c = manager.query(query);
+                if (c.moveToFirst()) {
+                    installApk();
                 }
             } else {
                 switch (intent.getIntExtra("what", 0)) {
@@ -168,6 +185,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                             presetReverb();
                         }
                         break;
+                    case Msg.MTASKID:
+                        mTaskId = intent.getLongExtra("mTaskId", 0L);
+                        break;
                     case Msg.CLOSE:
                         exitApp();
                         break;
@@ -175,6 +195,26 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             }
         }
     };
+
+    //安装应用
+    public void installApk(){
+        String apkPath = new StorageUtil(this).innerSDPath() + "/XTMusic/Package/XTMusic.apk";
+        File file = new File(apkPath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        //判读版本是否在7.0以上
+        if (Build.VERSION.SDK_INT >= 24) {
+            //provider authorities
+            Uri apkUri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
+            //Granting Temporary Permissions to a URI
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        }
+        startActivity(intent);
+    }
 
     //播放速度
     public void changeplayerSpeed() {
@@ -832,6 +872,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         IntentFilter filter = new IntentFilter();
         filter.addAction("sBroadcast");
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         registerReceiver(sBroadcast, filter);
 
         //注册电话监听

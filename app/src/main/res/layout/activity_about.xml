@@ -35,6 +35,7 @@
 
     <Button
         android:text="检查更新"
+        android:onClick="checkUpdate"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/statement"
         android:layout_width="wrap_content"
