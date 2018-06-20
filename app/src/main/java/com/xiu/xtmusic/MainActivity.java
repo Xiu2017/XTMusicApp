@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private boolean isTimer;
     private boolean update;
     private MusicDao dao;
-    private MenuItem timerItem, speedItem, bassItem, reverbItem, cacheItem;
+    private MenuItem timerItem;//, speedItem, bassItem, reverbItem, cacheItem;
     private Dialog dialog;
     private ContentResolver contentResolver;
     private MyObserver observer;
@@ -120,31 +120,30 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         initRegister();  //注册内容观察者,当媒体数据库发生变化时,更新音乐列表
         initAnim();  //初始化专辑旋转动画
         initData();  //初始化持久化数据
-        cacheSize();  //计算缓存大小
     }
 
     //初始化持久化数据
     public void initData() {
         SharedPreferences pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
-        float speed = pref.getFloat("speed", 1.0f);
+        int speed = pref.getInt("speed", 25);
         int bass = pref.getInt("bass", 0);
         int reverb = pref.getInt("reverb", 0);
 
-        speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
+        //speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
         sBroadcast = new Intent();
         sBroadcast.setAction("sBroadcast");
         sBroadcast.putExtra("what", Msg.PLAY_SPEED);
         sBroadcast.putExtra("speed", speed);
         sendBroadcast(sBroadcast);
 
-        bassItem.setTitle("低音增益 " + bass);
+        //bassItem.setTitle("低音增益 " + bass);
         sBroadcast = new Intent();
         sBroadcast.setAction("sBroadcast");
         sBroadcast.putExtra("what", Msg.BASS_LEVEL);
         sBroadcast.putExtra("bass", bass);
         sendBroadcast(sBroadcast);
 
-        reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
+        //reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
         sBroadcast = new Intent();
         sBroadcast.setAction("sBroadcast");
         sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
@@ -153,16 +152,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     //计算缓存大小
-    public void cacheSize() {
+    public String cacheSize() {
         String innerPath = new StorageUtil(this).innerSDPath();
         innerPath = innerPath + "/Android/data/com.xiu.xtmusic/cache/";
         File file = new File(innerPath);
-        if(file.exists()){
-            String size = FileSizeUtil.getAutoFileOrFilesSize(innerPath);
-            cacheItem.setTitle("清除缓存 " + size);
-        }else {
-            cacheItem.setTitle("清除缓存 0B");
-        }
+        if(file.exists())
+            return FileSizeUtil.getAutoFileOrFilesSize(innerPath);
+        return "0B";
     }
 
     //初始化viewPager
@@ -260,10 +256,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         navigationView.setNavigationItemSelectedListener(this);
 
         timerItem = navigationView.getMenu().getItem(1);
-        speedItem = navigationView.getMenu().getItem(2);
-        bassItem = navigationView.getMenu().getItem(3);
-        reverbItem = navigationView.getMenu().getItem(4);
-        cacheItem = navigationView.getMenu().getItem(5);
+        //speedItem = navigationView.getMenu().getItem(2);
+        //bassItem = navigationView.getMenu().getItem(3);
+        //reverbItem = navigationView.getMenu().getItem(4);
+        //cacheItem = navigationView.getMenu().getItem(5);
     }
 
     //初始化沉浸式状态栏
@@ -337,28 +333,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         hunt = (ImageView) findViewById(R.id.hunt);
         musicSize = (TextView) findViewById(R.id.musicSize);
         musicName = (TextView) findViewById(R.id.musicName);
-
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                cacheSize();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
     }
 
     //viewpager切换到指定item
@@ -1058,8 +1032,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        SharedPreferences pref;
-        SharedPreferences.Editor editor;
+/*        SharedPreferences pref;
+        SharedPreferences.Editor editor;*/
         switch (item.getItemId()) {
             case R.id.nav_refresh:
                 updateMediaRepertory();
@@ -1072,7 +1046,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     timerSelect();
                 }
                 break;
-            case R.id.nav_speed:
+/*            case R.id.nav_speed:
                 if (app.getMp() == null) break;
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     TastyToast.makeText(this, "仅支持安卓6以上版本", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
@@ -1135,7 +1109,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
                 sBroadcast.putExtra("reverb", reverb);
                 sendBroadcast(sBroadcast);
-                break;
+                break;*/
             case R.id.nav_cache:
                 cleanCacheTips();
                 break;
@@ -1151,14 +1125,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
         //收起侧边栏
         int itemId = item.getItemId();
-        if (itemId != R.id.nav_speed && itemId != R.id.nav_bass && itemId != R.id.nav_reverb && itemId != R.id.nav_cache) {
+        //if (itemId != R.id.nav_speed && itemId != R.id.nav_bass && itemId != R.id.nav_reverb && itemId != R.id.nav_cache) {
             drawer.closeDrawer(GravityCompat.START);
-        }
+        //}
         return true;
     }
 
     //混响等级转字符串
-    public String reverbToStr(int reverb){
+/*    public String reverbToStr(int reverb){
         String strReverb = "关闭";
         switch (reverb){
             case 0:
@@ -1184,14 +1158,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 break;
         }
         return strReverb;
-    }
+    }*/
 
     //清除缓存提示
     public void cleanCacheTips() {
         //自定义控件
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         //设置time布局
-        builder.setTitle("清除缓存说明");
+        builder.setTitle("当前缓存大小："+cacheSize());
         builder.setMessage("清除缓存后，播放历史列表的歌曲需要重新联网缓存，且因歌曲链接的时效性，有可能无法重新缓存，是否继续？");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
@@ -1202,7 +1176,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 try {
                     FileUtils.delFolder(innerPath);
                     TastyToast.makeText(MainActivity.this, "清除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
-                    cacheSize();
                     historyAdapter.notifyDataSetChanged();
                 } catch (Exception e) {
                     TastyToast.makeText(MainActivity.this, "清除失败", Msg.LENGTH_SHORT, TastyToast.ERROR).show();

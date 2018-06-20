@@ -80,7 +80,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //private KeyguardManager mKeyguardManager;
 
     private AudioManager am;
-    private float speed = 1.0f;
+    private int speed = 25;
     private int bass = 0;
     private int reverb = 0;
 
@@ -147,7 +147,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         play();
                         break;
                     case Msg.PLAY_SPEED:
-                        speed = intent.getFloatExtra("speed", 1.0f);
+                        speed = intent.getIntExtra("speed", 25);
                         if(mp != null){
                             changeplayerSpeed();
                         }
@@ -177,11 +177,12 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         // this checks on API 23 and up6.0以上
         if (mp == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            float sp = (speed+75)/100.0f;
             try {
                 if (mp.isPlaying()) {
-                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(sp));
                 } else {
-                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(speed).setPitch(speed));
+                    mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(sp));
                     mp.pause();
                 }
             } catch (Exception e) {
