@@ -21,7 +21,6 @@ import com.xiu.entity.Msg;
 import com.xiu.utils.mApplication;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 
 public class AboutActivity extends AppCompatActivity {
 

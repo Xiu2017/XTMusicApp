@@ -125,30 +125,39 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //初始化持久化数据
     public void initData() {
         SharedPreferences pref = getSharedPreferences("xtmusic", Context.MODE_PRIVATE); //私有数据
-        int speed = pref.getInt("speed", 25);
-        int bass = pref.getInt("bass", 0);
-        int reverb = pref.getInt("reverb", 0);
+        //清空旧数据
+        if(pref.getInt("version", 0) == 0){
+            SharedPreferences.Editor editor = pref.edit();
+            editor.clear();
+            editor.putInt("version", 1);
+            editor.apply();
+            editor.commit();
+        }else {
+            int speed = pref.getInt("speed", 25);
+            int bass = pref.getInt("bass", 0);
+            int reverb = pref.getInt("reverb", 0);
 
-        //speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
-        sBroadcast = new Intent();
-        sBroadcast.setAction("sBroadcast");
-        sBroadcast.putExtra("what", Msg.PLAY_SPEED);
-        sBroadcast.putExtra("speed", speed);
-        sendBroadcast(sBroadcast);
+            //speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
+            sBroadcast = new Intent();
+            sBroadcast.setAction("sBroadcast");
+            sBroadcast.putExtra("what", Msg.PLAY_SPEED);
+            sBroadcast.putExtra("speed", speed);
+            sendBroadcast(sBroadcast);
 
-        //bassItem.setTitle("低音增益 " + bass);
-        sBroadcast = new Intent();
-        sBroadcast.setAction("sBroadcast");
-        sBroadcast.putExtra("what", Msg.BASS_LEVEL);
-        sBroadcast.putExtra("bass", bass);
-        sendBroadcast(sBroadcast);
+            //bassItem.setTitle("低音增益 " + bass);
+            sBroadcast = new Intent();
+            sBroadcast.setAction("sBroadcast");
+            sBroadcast.putExtra("what", Msg.BASS_LEVEL);
+            sBroadcast.putExtra("bass", bass);
+            sendBroadcast(sBroadcast);
 
-        //reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
-        sBroadcast = new Intent();
-        sBroadcast.setAction("sBroadcast");
-        sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
-        sBroadcast.putExtra("reverb", reverb);
-        sendBroadcast(sBroadcast);
+            //reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
+            sBroadcast = new Intent();
+            sBroadcast.setAction("sBroadcast");
+            sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
+            sBroadcast.putExtra("reverb", reverb);
+            sendBroadcast(sBroadcast);
+        }
     }
 
     //计算缓存大小
