@@ -148,7 +148,7 @@ public class AboutActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(AboutActivity.this);
         //设置time布局
         builder.setTitle("检测到新版本");
-        builder.setMessage("版本：" + versionName + "("+size+")\n更新内容：\n" + desc);
+        builder.setMessage("版本：" + versionName + "("+size+")\n更新内容：" + desc);
         builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

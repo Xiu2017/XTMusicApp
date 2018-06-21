@@ -87,7 +87,8 @@ public class MusicDao {
         music.setDate(System.currentTimeMillis());
         try {
             QueryBuilder builder = dao.queryBuilder();
-            builder.where().eq("name", music.getName().replace("'","''"))
+            String str = music.getName().replace("'", "''").replace("\"", "\"\"");
+            builder.where().eq("name", str)
                     .and().eq("size", music.getSize());
             List<Music> list = builder.query();
             if (list != null && list.size() > 0) {
@@ -143,10 +144,10 @@ public class MusicDao {
                         }
                     }
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                    final String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                     if (isRepeat(list, title, artist, album)) continue;    //去掉重复歌曲
                     int time = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    final long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
+                    long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
 
                     music = new Music();
                     music.setTitle(title);
@@ -215,9 +216,9 @@ public class MusicDao {
                     }
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                     if (isRepeat(list, title, artist, album)) continue;    //去掉重复歌曲
-                    final String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                     int time = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    final long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
+                    long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
 
                     music = new Music();
                     music.setTitle(title);

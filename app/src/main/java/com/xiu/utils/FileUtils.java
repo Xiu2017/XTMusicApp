@@ -140,16 +140,6 @@ public class FileUtils {
         }
     }
 
-    //判断文件是否存在
-    public static boolean existsFile(String path) {
-        if (path != null && path.length() > 0) {
-            File file = new File(path);
-            if (file.exists())
-                return true;
-        }
-        return false;
-    }
-
     //删除文件夹下的所有文件
     public static boolean delAllFile(String path) {
         boolean flag = false;

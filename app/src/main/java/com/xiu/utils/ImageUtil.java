@@ -103,16 +103,4 @@ public class ImageUtil {
         }
         return filePic.getAbsolutePath();
     }
-
-    //加载resource图片
-    public static Bitmap decodeBitmapResource(Resources resources, int id) {
-        Bitmap bitmap;
-        InputStream is = resources.openRawResource(id);
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inPurgeable = true;
-        opts.inInputShareable = true;
-        opts.inPreferredConfig = Bitmap.Config.RGB_565;
-        bitmap = BitmapFactory.decodeStream(is, null, opts);
-        return bitmap;
-    }
 }

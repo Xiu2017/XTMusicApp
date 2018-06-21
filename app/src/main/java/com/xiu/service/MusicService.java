@@ -1,5 +1,6 @@
 package com.xiu.service;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,9 +9,11 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -34,6 +37,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.danikula.videocache.HttpProxyCacheServer;
@@ -45,8 +49,12 @@ import com.xiu.utils.ImageUtil;
 import com.xiu.utils.NetworkState;
 import com.xiu.utils.StorageUtil;
 import com.xiu.utils.mApplication;
+import com.xiu.xtmusic.AboutActivity;
 import com.xiu.xtmusic.AlbumActivity;
 import com.xiu.xtmusic.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +65,12 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 音乐服务
@@ -672,6 +686,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     }
 
+    /**
+     * 更新锁屏信息
+     */
     public void updateLocMsg() {
         if(app.getmList() == null || app.getmList().size() == 0 || app.getIdx() == 0) return;
         Music music = app.getmList().get(app.getIdx() - 1);
@@ -706,8 +723,10 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         }
     }
 
+    /**
+     * 屏幕开启状态监听
+     */
     private ScreenBroadcastReceiver mScreenReceiver = new ScreenBroadcastReceiver();
-
     private class ScreenBroadcastReceiver extends BroadcastReceiver {
         private String action = null;
 
@@ -888,6 +907,9 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         startScreenBroadcastReceiver();
         //定时刷新播放进度
         runnable.run();
+
+        //检查更新
+        //isCheckUpdate();
 
         //服务被杀死后重启
         flags = START_STICKY;

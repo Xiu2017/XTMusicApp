@@ -119,6 +119,7 @@ public class NeteaseMusic {
                                         music.setName(music.getArtist() + " - " + music.getTitle() + ".mp3");
                                         music.setAlbum(obj.getJSONObject("al").getString("name"));
                                         music.setAlbumPath(obj.getJSONObject("al").getString("picUrl"));
+                                        //Log.d("albumPath", music.getAlbumPath());
                                         String path = "http://music.163.com/song/media/outer/url?id=" + obj.getString("id") + ".mp3";
                                         music.setPath(path);
                                         //if (!dao.isExist(local, music)) {

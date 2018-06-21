@@ -45,4 +45,5 @@ public class Msg {
     public static final int UPDATE_ISNEW = 1034; //已是最新版本
     public static final int UPDATE_NEW = 1035;  //有新版本
     public static final int MTASKID = 1036;  //下载id
+    public static final int CHECK_UPDATE = 1037;  //检查更新
 }

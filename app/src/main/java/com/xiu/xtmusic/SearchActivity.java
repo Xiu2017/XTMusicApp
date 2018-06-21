@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
@@ -39,6 +40,7 @@ import com.xiu.entity.MusicList;
 import com.xiu.utils.CallBack;
 import com.xiu.utils.FileUtils;
 import com.xiu.api.KuGouMusic;
+import com.xiu.utils.ImageUtil;
 import com.xiu.utils.JSSecret;
 import com.xiu.utils.PicUtils;
 import com.xiu.utils.StorageUtil;
@@ -405,6 +407,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         public void success(String str) {
                             //转格式
                             //PicUtils.convertToJpg(toPath,toPath.replace(".png",".jpg"));
+                            //压缩图片文件(避免网易云专辑图片发生10几M这种恐怖的事情发生)
+                            Bitmap bitmap = ImageUtil.getimage(toPath, 500f, 500f);
+                            ImageUtil.saveBitmap(bitmap, toPath);
                             //刷新通知栏
                             Intent intent = new Intent();
                             intent.setAction("sBroadcast");
