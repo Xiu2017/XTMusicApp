@@ -684,8 +684,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 TastyToast.makeText(this, "文件不存在", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
                 return;
             }
-            //Uri uri = Uri.fromFile(file);
-            Uri uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
+            Uri uri;
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+                uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
+            }else {
+                uri = Uri.fromFile(file);
+            }
             intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.setType("audio/*");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

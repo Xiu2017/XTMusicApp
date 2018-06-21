@@ -225,8 +225,13 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(Intent.createChooser(intent, "分享音乐链接"));
                     } else {
+                        Uri uri;
                         File file = new File(music.getPath());
-                        Uri uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+                            uri = FileProvider.getUriForFile(this, "com.xiu.xtmusic.MainActivity", file);
+                        }else {
+                            uri = Uri.fromFile(file);
+                        }
                         intent.putExtra(Intent.EXTRA_STREAM, uri);
                         intent.setType("audio/*");
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
