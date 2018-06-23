@@ -34,6 +34,7 @@ public class mApplication extends Application {
     private HttpProxyCacheServer proxy;  //缓存
     private Timer timer;
     private Task task;
+    private boolean deleteMode = false;
 
     //缓存开源框架：https://github.com/danikula/AndroidVideoCache
     //获取Proxy
@@ -188,5 +189,13 @@ public class mApplication extends Application {
 
     public void setPlaymode(int playmode) {
         this.playmode = playmode;
+    }
+
+    public boolean isDeleteMode() {
+        return deleteMode;
+    }
+
+    public void setDeleteMode(boolean deleteMode) {
+        this.deleteMode = deleteMode;
     }
 }

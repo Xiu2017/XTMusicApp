@@ -45,7 +45,9 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -508,9 +510,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 dialog = new MusicInfoDialog(this, getMusicByNum(view));
                 dialog.show();
                 break;
+            case R.id.menu_delmode:  //单击删除模式
+                dialog.dismiss();
+                Button button = (Button) findViewById(R.id.exitdel);
+                button.setVisibility(View.VISIBLE);
+                app.setDeleteMode(true);
+                break;
             case R.id.menu_delete:  //删除歌曲
                 dialog.dismiss();
-                delMusic(getMusicByNum(view));
+                delMusicDialog(getMusicByNum(view));
                 break;
             case R.id.search:  //搜索在线歌曲
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
@@ -578,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     //删除歌曲
-    public void delMusic(final Music music) {
+    public void delMusicDialog(final Music music) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (music.getPath().contains("http://")) {
             builder.setMessage("确定要移除歌曲吗？");
@@ -595,67 +603,74 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
-                String extSD = new StorageUtil(MainActivity.this).extSDPath();
-                boolean isUrl = music.getPath().contains("http://");
-                File file = null;
-                if (!isUrl) {
-                    file = new File(music.getPath());
-                    if (file.exists()) {
-                        if (music.getPath().contains(extSD + "")) {
-                            TastyToast.makeText(MainActivity.this, "暂不支持删除外置SD卡文件", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
-                            return;
-                        } else if (file != null && file.delete()) {
-                            TastyToast.makeText(MainActivity.this, "删除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
-                        }
-                    }
-                }
-
-                //删除专辑图片
-                String innerSDPath = new StorageUtil(MainActivity.this).innerSDPath();
-                String name = music.getName();
-                final String path = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
-                file = new File(path);
-                if (file.exists()) {
-                    file.delete();
-                }
-
-                //从数据库和媒体库中删除
-                dao.delMusicById(music);
-                getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        MediaStore.Audio.Media.DATA + "= \"" + music.getPath() + "\"",
-                        null);
-
-                int idx = app.getIdx() - 1;
-                int delIdx = -1;
-                switch (viewPager.getCurrentItem()) {
-                    case 0:
-                        delIdx = list.indexOf(music);
-                        list.clear();
-                        list.addAll(dao.getMusicData());
-                        app.setmList(list);
-                        break;
-                    case 1:
-                        delIdx = historyData.indexOf(music);
-                        historyData.clear();
-                        historyData.addAll(dao.selMusicByDate());
-                        app.setmList(historyData);
-                        break;
-                }
-
-                //app.getmList().remove(music);
-                if (delIdx == idx && app.getmList().size() > 0 && app.getPlaylist() == viewPager.getCurrentItem()) {
-                    app.setIdx(delIdx);
-                    playNext();
-                } else if (delIdx < idx) {
-                    app.setIdx(idx);
-                }
-
-                adapter.notifyDataSetChanged();
-                historyAdapter.notifyDataSetChanged();
+                delMusic(music);
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    //删除音乐
+    public void delMusic(Music music){
+        String extSD = new StorageUtil(MainActivity.this).extSDPath();
+        boolean isUrl = music.getPath().contains("http://");
+        File file;
+        if (!isUrl) {
+            file = new File(music.getPath());
+            if (file.exists()) {
+                if (music.getPath().contains(extSD + "")) {
+                    TastyToast.makeText(MainActivity.this, "暂不支持删除外置SD卡文件", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+                    return;
+                } else if (file != null && file.delete() && !app.isDeleteMode()) {
+                    TastyToast.makeText(MainActivity.this, "删除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+                }else {
+                    TastyToast.makeText(MainActivity.this, "删除失败", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+                }
+            }
+        }
+
+        //删除专辑图片
+        String innerSDPath = new StorageUtil(MainActivity.this).innerSDPath();
+        String name = music.getName();
+        final String path = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
+        file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
+
+        //从数据库和媒体库中删除
+        dao.delMusicById(music);
+        getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Media.DATA + "= \"" + music.getPath() + "\"",
+                null);
+
+        int idx = app.getIdx() - 1;
+        int delIdx = -1;
+        switch (viewPager.getCurrentItem()) {
+            case 0:
+                delIdx = list.indexOf(music);
+                list.clear();
+                list.addAll(dao.getMusicData());
+                app.setmList(list);
+                break;
+            case 1:
+                delIdx = historyData.indexOf(music);
+                historyData.clear();
+                historyData.addAll(dao.selMusicByDate());
+                app.setmList(historyData);
+                break;
+        }
+
+        //app.getmList().remove(music);
+        if (delIdx == idx && app.getmList().size() > 0 && app.getPlaylist() == viewPager.getCurrentItem()) {
+            app.setIdx(delIdx);
+            playNext();
+        } else if (delIdx < idx) {
+            app.setIdx(idx);
+        }
+
+        adapter.notifyDataSetChanged();
+        historyAdapter.notifyDataSetChanged();
     }
 
     //根据音乐编号获取音乐
@@ -743,10 +758,28 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //点击了item
     public void clickItem(View view) {
-        //获取要播放歌曲的编号
-        TextView textView = (TextView) view.findViewById(R.id.musicNum);
-        int musicNum = Integer.parseInt(textView.getText().toString());
-        sendPlay(musicNum);
+        //点击删除模式
+        if(app.isDeleteMode()){
+            LinearLayout layout = (LinearLayout) view;
+            TextView textView = (TextView) layout.findViewById(R.id.musicNum);
+            int musicNum = Integer.parseInt(textView.getText().toString());
+            if (viewPager.getCurrentItem() == 0) {
+                delMusic(list.get(musicNum - 1));
+            }else {
+                delMusic(historyData.get(musicNum - 1));
+            }
+        }else {
+            //获取要播放歌曲的编号
+            TextView textView = (TextView) view.findViewById(R.id.musicNum);
+            int musicNum = Integer.parseInt(textView.getText().toString());
+            sendPlay(musicNum);
+        }
+    }
+
+    //退出单击删除模式
+    public void exitDel(View view){
+        app.setDeleteMode(false);
+        view.setVisibility(View.GONE);
     }
 
     //通知服务播放音乐
@@ -1010,6 +1043,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         unregisterReceiver(mBroadcast);
         //停止专辑动画
         albumRotate(STOP);
+        //退出点击删除模式
+        exitDel(findViewById(R.id.exitdel));
     }
 
     //销毁时释放资源
@@ -1143,9 +1178,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 break;
         }
         //收起侧边栏
-        int itemId = item.getItemId();
+        //int itemId = item.getItemId();
         //if (itemId != R.id.nav_speed && itemId != R.id.nav_bass && itemId != R.id.nav_reverb && itemId != R.id.nav_cache) {
-            drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.START);
         //}
         return true;
     }
