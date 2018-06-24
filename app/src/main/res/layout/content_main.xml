@@ -46,21 +46,4 @@
         android:src="@mipmap/btn_hunt"
         android:visibility="gone" />
 
-    <Button
-        android:id="@+id/exitdel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/btm_radius"
-        android:onClick="exitDel"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp"
-        android:text="退出删除模式"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        android:visibility="gone" />
-
 </RelativeLayout>

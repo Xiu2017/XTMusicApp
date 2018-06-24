@@ -13,7 +13,9 @@ import com.xiu.service.MusicService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +37,7 @@ public class mApplication extends Application {
     private Timer timer;
     private Task task;
     private boolean deleteMode = false;
+    private Map<Integer, Boolean> delMap = new HashMap<>();
 
     //缓存开源框架：https://github.com/danikula/AndroidVideoCache
     //获取Proxy
@@ -197,5 +200,13 @@ public class mApplication extends Application {
 
     public void setDeleteMode(boolean deleteMode) {
         this.deleteMode = deleteMode;
+    }
+
+    public Map<Integer, Boolean> getDelMap() {
+        return delMap;
+    }
+
+    public void setDelMap(Map<Integer, Boolean> delMap) {
+        this.delMap = delMap;
     }
 }

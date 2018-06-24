@@ -7,7 +7,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 20180624
-        versionName "1.7"
+        versionName "1.75"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

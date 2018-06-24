@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -75,6 +76,9 @@ public class MusicListAdapter extends BaseAdapter {
                 musicItem.musicArtist = (TextView) view.findViewById(R.id.musicArtist);
                 musicItem.musicPath = (TextView) view.findViewById(R.id.musicPath);
                 musicItem.kugou = (ImageView) view.findViewById(R.id.kugou);
+                musicItem.item_menu = (LinearLayout) view.findViewById(R.id.item_menu);
+                musicItem.item_check = (LinearLayout) view.findViewById(R.id.item_check);
+                musicItem.checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 
                 view.setTag(musicItem);
             } else {
@@ -136,7 +140,7 @@ public class MusicListAdapter extends BaseAdapter {
                 musicItem.musicNum.setVisibility(View.GONE);
                 musicItem.playing.setVisibility(View.VISIBLE);
 
-                if (music.getPath().contains("http://") || new File(music.getPath()).exists()) {
+                if ((music.getPath().contains("http://") || new File(music.getPath()).exists()) && !app.isDeleteMode()) {
                     musicItem.list_item.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -150,14 +154,34 @@ public class MusicListAdapter extends BaseAdapter {
                 musicItem.playing.setVisibility(View.GONE);
             }
 
+            //进入删除模式
+            if(app.isDeleteMode()){
+                musicItem.item_menu.setVisibility(View.GONE);
+                musicItem.item_check.setVisibility(View.VISIBLE);
+            }else {
+                musicItem.item_menu.setVisibility(View.VISIBLE);
+                musicItem.item_check.setVisibility(View.GONE);
+            }
+
+            //让选中的歌曲背景改变
+            Boolean selected = app.getDelMap().get(i+1);
+            if(selected != null && selected){
+                musicItem.checkBox.setChecked(true);
+                //musicItem.list_item.setBackgroundColor(app.getResources().getColor(R.color.colorItemSeleted));
+            }else {
+                musicItem.checkBox.setChecked(false);
+                //musicItem.list_item.setBackgroundColor(Color.TRANSPARENT);
+            }
+
             return view;
         }
         return null;
     }
 
     class MusicItem {
-        LinearLayout list_item;
+        LinearLayout list_item, item_menu, item_check;
         ImageView playing, kugou;
         TextView musicNum, musicTitle, musicArtist, musicPath;
+        CheckBox checkBox;
     }
 }

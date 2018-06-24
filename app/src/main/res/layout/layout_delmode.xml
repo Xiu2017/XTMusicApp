@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:visibility="gone"
+    android:id="@+id/delmodeBar"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/white"
+    android:orientation="horizontal">
+
+    <TextView
+        android:onClick="selectedAll"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="全选"
+        android:textColor="@color/colorText"
+        android:textSize="15sp" />
+
+    <TextView
+        android:onClick="cancelAll"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="反选"
+        android:textColor="@color/colorText"
+        android:textSize="15sp" />
+
+    <TextView
+        android:onClick="delMusicByMap"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="删除"
+        android:textColor="@color/colorPrimary"
+        android:textSize="15sp" />
+
+    <TextView
+        android:onClick="exitDel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="取消"
+        android:textColor="@color/colorText"
+        android:textSize="15sp" />
+
+</LinearLayout>

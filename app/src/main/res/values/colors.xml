@@ -17,4 +17,6 @@
     <color name="colorGray">@android:color/darker_gray</color>
     <color name="colorLrc">#80FFFFFF</color>
     <color name="colorAlbumBg">#20000000</color>
+
+    <color name="colorItemSeleted">#10D23A31</color>
 </resources>

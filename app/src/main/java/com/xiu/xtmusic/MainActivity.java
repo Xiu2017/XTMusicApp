@@ -53,6 +53,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -75,7 +76,9 @@ import com.xiu.utils.mApplication;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -98,9 +101,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private LinearLayout emptyList;
     private DrawerLayout drawer;  //侧边栏
     private ObjectAnimator rotation;  //专辑旋转动画
-    private LinearLayout group;  //顶部的选项卡
+    private LinearLayout group, delmodeBar;  //顶部的选项卡
     private View localTab, historyTab;  //选项卡：本地，历史
     private ViewPager viewPager;  //页视图
+    private RelativeLayout playBar;  //播放控制栏
 
     //private float speed = 1.00f;  //播放速度
     //private float pitch = 1.00f;  //音调
@@ -196,6 +200,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
             @Override
             public void onPageSelected(int position) {
+                if(app.isDeleteMode()){
+                    exitDel(null);
+                }
                 //获取本地和历史选项卡
                 TextView local = (TextView) group.getChildAt(0);
                 TextView history = (TextView) group.getChildAt(1);
@@ -311,6 +318,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         AbsListView.OnScrollListener mScroll = new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
+                if(app.isDeleteMode()){
+                    return;
+                }
                 switch (i) {
                     case 1:
                         hunt.clearAnimation();
@@ -328,6 +338,50 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         };
         musicList.setOnScrollListener(mScroll);
         historyList.setOnScrollListener(mScroll);
+
+        musicList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(app.isDeleteMode()){
+                    return true;
+                }
+                hunt.setVisibility(View.GONE);
+                LinearLayout layout = (LinearLayout) view;
+                TextView textView = (TextView) layout.findViewById(R.id.musicNum);
+                int musicNum = Integer.parseInt(textView.getText().toString());
+                app.getDelMap().put(musicNum, true);
+                adapter.notifyDataSetChanged();
+                //view.setBackgroundColor(getResources().getColor(R.color.colorItemSeleted));
+                delmodeBar.setVisibility(View.VISIBLE);
+                delmodeBar.setAnimation(AnimationUtils.makeInAnimation(MainActivity.this, true));
+                playBar.setVisibility(View.GONE);
+                playBar.setAnimation(AnimationUtils.makeOutAnimation(MainActivity.this, true));
+                app.setDeleteMode(true);
+                return true;
+            }
+        });
+
+        historyList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(app.isDeleteMode()){
+                    return true;
+                }
+                hunt.setVisibility(View.GONE);
+                LinearLayout layout = (LinearLayout) view;
+                TextView textView = (TextView) layout.findViewById(R.id.musicNum);
+                int musicNum = Integer.parseInt(textView.getText().toString());
+                app.getDelMap().put(musicNum, true);
+                historyAdapter.notifyDataSetChanged();
+                //view.setBackgroundColor(getResources().getColor(R.color.colorItemSeleted));
+                delmodeBar.setVisibility(View.VISIBLE);
+                delmodeBar.setAnimation(AnimationUtils.makeOutAnimation(MainActivity.this, true));
+                playBar.setVisibility(View.GONE);
+                playBar.setAnimation(AnimationUtils.makeOutAnimation(MainActivity.this, true));
+                app.setDeleteMode(true);
+                return true;
+            }
+        });
     }
 
     //初始化布局元素
@@ -346,6 +400,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         hunt = (ImageView) findViewById(R.id.hunt);
         musicSize = (TextView) findViewById(R.id.musicSize);
         musicName = (TextView) findViewById(R.id.musicName);
+        delmodeBar = (LinearLayout) findViewById(R.id.delmodeBar);
+        playBar = (RelativeLayout) findViewById(R.id.playBar);
     }
 
     //viewpager切换到指定item
@@ -510,12 +566,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 dialog = new MusicInfoDialog(this, getMusicByNum(view));
                 dialog.show();
                 break;
-            case R.id.menu_delmode:  //单击删除模式
-                dialog.dismiss();
-                Button button = (Button) findViewById(R.id.exitdel);
-                button.setVisibility(View.VISIBLE);
-                app.setDeleteMode(true);
-                break;
             case R.id.menu_delete:  //删除歌曲
                 dialog.dismiss();
                 delMusicDialog(getMusicByNum(view));
@@ -530,6 +580,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //定位歌曲
     public void hunt() {
+        if(app.isDeleteMode()) return;
         if (app.getPlaylist() == 0) {
             viewPager.setCurrentItem(0, true);
             musicList.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
@@ -623,8 +674,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     return;
                 } else if (file != null && file.delete() && !app.isDeleteMode()) {
                     TastyToast.makeText(MainActivity.this, "删除成功", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
-                }else {
-                    TastyToast.makeText(MainActivity.this, "删除失败", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
                 }
             }
         }
@@ -644,33 +693,35 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 MediaStore.Audio.Media.DATA + "= \"" + music.getPath() + "\"",
                 null);
 
-        int idx = app.getIdx() - 1;
-        int delIdx = -1;
-        switch (viewPager.getCurrentItem()) {
-            case 0:
-                delIdx = list.indexOf(music);
-                list.clear();
-                list.addAll(dao.getMusicData());
-                app.setmList(list);
-                break;
-            case 1:
-                delIdx = historyData.indexOf(music);
-                historyData.clear();
-                historyData.addAll(dao.selMusicByDate());
-                app.setmList(historyData);
-                break;
-        }
+        if(!app.isDeleteMode()){
+            int idx = app.getIdx() - 1;
+            int delIdx = -1;
+            switch (viewPager.getCurrentItem()) {
+                case 0:
+                    delIdx = list.indexOf(music);
+                    list.clear();
+                    list.addAll(dao.getMusicData());
+                    app.setmList(list);
+                    break;
+                case 1:
+                    delIdx = historyData.indexOf(music);
+                    historyData.clear();
+                    historyData.addAll(dao.selMusicByDate());
+                    app.setmList(historyData);
+                    break;
+            }
 
-        //app.getmList().remove(music);
-        if (delIdx == idx && app.getmList().size() > 0 && app.getPlaylist() == viewPager.getCurrentItem()) {
-            app.setIdx(delIdx);
-            playNext();
-        } else if (delIdx < idx) {
-            app.setIdx(idx);
-        }
+            //app.getmList().remove(music);
+            if (delIdx == idx && app.getmList().size() > 0 && app.getPlaylist() == viewPager.getCurrentItem()) {
+                app.setIdx(delIdx);
+                playNext();
+            } else if (delIdx < idx) {
+                app.setIdx(idx);
+            }
 
-        adapter.notifyDataSetChanged();
-        historyAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
+            historyAdapter.notifyDataSetChanged();
+        }
     }
 
     //根据音乐编号获取音乐
@@ -758,15 +809,21 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     //点击了item
     public void clickItem(View view) {
-        //点击删除模式
+        //删除模式
         if(app.isDeleteMode()){
             LinearLayout layout = (LinearLayout) view;
             TextView textView = (TextView) layout.findViewById(R.id.musicNum);
             int musicNum = Integer.parseInt(textView.getText().toString());
-            if (viewPager.getCurrentItem() == 0) {
-                delMusic(list.get(musicNum - 1));
+            Boolean selected = app.getDelMap().get(musicNum);
+            if(selected != null && selected){
+                app.getDelMap().remove(musicNum);
             }else {
-                delMusic(historyData.get(musicNum - 1));
+                app.getDelMap().put(musicNum, true);
+            }
+            if(viewPager.getCurrentItem() == 0){
+                adapter.notifyDataSetChanged();
+            }else {
+                historyAdapter.notifyDataSetChanged();
             }
         }else {
             //获取要播放歌曲的编号
@@ -776,10 +833,120 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
     }
 
-    //退出单击删除模式
+    //退出删除模式
     public void exitDel(View view){
+        app.getDelMap().clear();
         app.setDeleteMode(false);
-        view.setVisibility(View.GONE);
+        if(viewPager.getCurrentItem() == 0){
+            adapter.notifyDataSetChanged();
+        }else {
+            historyAdapter.notifyDataSetChanged();
+        }
+        delmodeBar.setVisibility(View.GONE);
+        delmodeBar.setAnimation(AnimationUtils.makeOutAnimation(this, false));
+        playBar.setVisibility(View.VISIBLE);
+        playBar.setAnimation(AnimationUtils.makeInAnimation(this, false));
+    }
+
+    //选中所有
+    public void selectedAll(View view){
+        int size;
+        app.getDelMap().clear();
+        if(viewPager.getCurrentItem() == 0){
+            size = list.size();
+            for(int i = 0; i < size; i++){
+                app.getDelMap().put(i+1, true);
+            }
+            adapter.notifyDataSetChanged();
+        }else{
+            size = historyData.size();
+            for(int i = 0; i < size; i++){
+                app.getDelMap().put(i+1, true);
+            }
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //取消全选
+    public void cancelAll(View view){
+        app.getDelMap().clear();
+        if(viewPager.getCurrentItem() == 0){
+            adapter.notifyDataSetChanged();
+        }else {
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //删除
+    public void delMusicByMap(View view){
+        if(app.getDelMap().size() == 0){
+            TastyToast.makeText(this, "没有选择歌曲", Msg.LENGTH_SHORT, TastyToast.WARNING).show();
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("确定删除所选歌曲？");
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                //判断删除的是否是正在播放的歌曲
+                int idx = app.getIdx();
+                int delbefore = 0;
+                boolean delnow;
+                if(app.getDelMap().get(idx) != null && app.getDelMap().get(idx)){
+                    delnow = true;
+                }else {
+                    delnow = false;
+                }
+                //批量删除
+                for (Integer num : app.getDelMap().keySet()){
+                    if(num != null && app.getDelMap().get(num) != null && app.getDelMap().get(num)){
+                        if(num < idx){
+                            delbefore++;
+                        }
+                        if (viewPager.getCurrentItem() == 0) {
+                            delMusic(list.get(num - 1));
+                        }else {
+                            delMusic(historyData.get(num - 1));
+                        }
+                    }
+                }
+                //更新列表
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        list.clear();
+                        list.addAll(dao.getMusicData());
+                        app.setmList(list);
+                        break;
+                    case 1:
+                        historyData.clear();
+                        historyData.addAll(dao.selMusicByDate());
+                        app.setmList(historyData);
+                        break;
+                }
+
+                //重置播放
+                if(delnow){
+                    app.setIdx(0);
+                    playNext();
+                }else {
+                    app.setIdx(idx-delbefore);
+                }
+
+                //关闭多选模式
+                app.setDeleteMode(false);
+                exitDel(null);
+                TastyToast.makeText(MainActivity.this, "操作完成", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     //通知服务播放音乐
@@ -874,10 +1041,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     public void setAlbum(File file, String path) {
         if (file.exists()) {
             album.setImageBitmap(ImageUtil.getimage(file.getAbsolutePath(), 150f, 150f));
-/*                Picasso.with(this)
-                        .load(file)
-                        .resize(100, 100)
-                        .into(album);*/
         } else {
             album.setImageBitmap(ImageUtil.getimage(dao.getAlbumBitmap(path, R.mipmap.logo_red), 150f, 150f));
         }
@@ -1001,6 +1164,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //如果侧边栏展开，收起侧边栏
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        }else if(app.isDeleteMode()){
+            exitDel(null);
         } else {
             //否则后台运行
             moveTaskToBack(true);
@@ -1044,7 +1209,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //停止专辑动画
         albumRotate(STOP);
         //退出点击删除模式
-        exitDel(findViewById(R.id.exitdel));
+        if(app.isDeleteMode()){
+            exitDel(null);
+        }
     }
 
     //销毁时释放资源

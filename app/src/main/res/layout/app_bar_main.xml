@@ -78,6 +78,8 @@
 
     <include layout="@layout/content_main" />
 
+    <include layout="@layout/layout_delmode" />
+
     <include layout="@layout/play_ctrl_bar" />
 
 </RelativeLayout>
