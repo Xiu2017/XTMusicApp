@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 historyAdapter.notifyDataSetChanged();
                 //view.setBackgroundColor(getResources().getColor(R.color.colorItemSeleted));
                 delmodeBar.setVisibility(View.VISIBLE);
-                delmodeBar.setAnimation(AnimationUtils.makeOutAnimation(MainActivity.this, true));
+                delmodeBar.setAnimation(AnimationUtils.makeInAnimation(MainActivity.this, true));
                 playBar.setVisibility(View.GONE);
                 playBar.setAnimation(AnimationUtils.makeOutAnimation(MainActivity.this, true));
                 app.setDeleteMode(true);
