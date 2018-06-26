@@ -6,8 +6,8 @@ android {
         applicationId "com.xiu.xtmusic"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20180625
-        versionName "1.75"
+        versionCode 20180626
+        versionName "1.8"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -43,7 +43,7 @@ dependencies {
     //音乐缓存
     compile 'com.danikula:videocache:2.7.0'
     //音乐可视化https://github.com/GautamChibde/android-audio-visualizer
-    //compile 'com.chibde:audiovisualizer:2.0.1'
+    compile 'com.chibde:audiovisualizer:2.0.1'
     //个性化Toast提示
     compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     //图片开源框架

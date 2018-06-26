@@ -238,7 +238,7 @@ public class AboutActivity extends AppCompatActivity {
      * 获取本地软件版本号
      */
     public int getLocalVersion() {
-        int localVersion = 20180621;
+        int localVersion = 20180626;
         try {
             PackageInfo packageInfo = getApplicationContext()
                     .getPackageManager()
@@ -254,7 +254,7 @@ public class AboutActivity extends AppCompatActivity {
      * 获取本地软件版本号名称
      */
     public String getLocalVersionName() {
-        String localVersion = "1.7";
+        String localVersion = "1.8";
         try {
             PackageInfo packageInfo = getApplicationContext()
                     .getPackageManager()

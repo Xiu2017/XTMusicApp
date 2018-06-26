@@ -6,13 +6,20 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <TextView
+    <!--    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="播放设置"
+            android:textColor="#50C80000"
+            android:textSize="26sp" />-->
+
+    <com.xiu.customview.CustomVisualizer
+        android:id="@+id/visualizer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_marginBottom="20dp"
-        android:text="@string/setting"
-        android:textColor="#50C80000"
-        android:textSize="26sp" />
+        android:background="@drawable/shape_red" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -78,15 +85,6 @@
             android:textSize="12sp" />
     </RelativeLayout>
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:checked="true"
-        android:text="绑定速度和音高"
-        android:textSize="12sp" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp">
@@ -149,12 +147,21 @@
             android:textSize="12sp" />
     </RelativeLayout>
 
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:checked="true"
+        android:text="绑定速度和音高"
+        android:textSize="12sp" />
+
     <Button
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:onClick="resetAll"
-        android:text="重置"
-        android:textSize="15sp" />
+        android:text="重置" />
 
 </LinearLayout>

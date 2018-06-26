@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.xiu.customview.CustomVisualizer;
 import com.xiu.entity.Msg;
 import com.xiu.utils.mApplication;
 
@@ -33,6 +34,8 @@ public class SettingActivity extends AppCompatActivity {
     private boolean binding;
     private boolean synced;
 
+    private CustomVisualizer customVisualizer;  //可视化
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,20 @@ public class SettingActivity extends AppCompatActivity {
         initView();
         initListener();
         initData();
+    }
+
+    //初始化可视化
+    public void initVisualizer() {
+        mApplication app = (mApplication) getApplicationContext();
+        if (app.getMp() != null) {
+            customVisualizer = (CustomVisualizer) findViewById(R.id.visualizer);
+            //设置自定义颜色
+            customVisualizer.setColor(getResources().getColor(R.color.colorPrimary));
+            //设置可视化的采样率，10 - 256
+            customVisualizer.setDensity(96);
+            //绑定MediaPlayer
+            customVisualizer.setPlayer(app.getMp().getAudioSessionId());
+        }
     }
 
     //初始化监听事件
@@ -260,6 +277,21 @@ public class SettingActivity extends AppCompatActivity {
         win.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             win.setStatusBarColor(Color.TRANSPARENT);// SDK21
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initVisualizer();  //初始化可视化
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //释放资源
+        if (customVisualizer != null) {
+            customVisualizer.release();
         }
     }
 }
