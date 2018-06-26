@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.sdsmdg.tastytoast.TastyToast;
 import com.xiu.entity.Msg;
@@ -50,6 +51,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private int versionCode;
     private String versionName;
+    private TextView statement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,12 @@ public class AboutActivity extends AppCompatActivity {
         initStatusBar();
         versionCode = getLocalVersion();
         versionName = getLocalVersionName();
+
+        //设置版本号
+        statement = (TextView) findViewById(R.id.statement);
+        String version = getResources().getString(R.string.tip);
+        version = String.format(version, versionName);
+        statement.setText(version);
     }
 
     BroadcastReceiver uBroadcast = new BroadcastReceiver() {
@@ -109,7 +117,7 @@ public class AboutActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 //通过response得到服务器响应内容
                 String str = response.body().string();
-                Log.d("str", str);
+                //Log.d("str", str);
                 try {
                     JSONObject json = new JSONObject(str);
                     int vc = json.getInt("versionCode");
