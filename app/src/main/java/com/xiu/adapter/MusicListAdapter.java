@@ -110,7 +110,11 @@ public class MusicListAdapter extends BaseAdapter {
                     DecimalFormat df = new DecimalFormat("#0.00M");
                     float temp = music.getSize() / 1024.0f / 1024.0f;
                     //检查缓存
-                    if (app.getProxy(context).isCached(music.getPath())) {
+                    String path = music.getPath();
+                    if(path.contains("qqmusic")){
+                        path = path.split("\\|")[0];
+                    }
+                    if (app.getProxy(context).isCached(path)) {
                         musicItem.musicPath.setText("已缓存");
                     } else {
                         musicItem.musicPath.setText(temp < 0.01f ? "未知" : df.format(temp));
