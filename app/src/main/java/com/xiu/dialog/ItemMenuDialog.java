@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.xiu.entity.Music;
@@ -57,6 +58,20 @@ public class ItemMenuDialog extends Dialog {
         title.setText(music.getTitle());
         TextView id = (TextView) view.findViewById(R.id.musicNum);
         id.setText(num);
+
+        //判断支持下载的音质
+/*        Button d2 = (Button) findViewById(R.id.menu_download2);
+        Button d3 = (Button) findViewById(R.id.menu_download3);
+        String path = music.getPath();
+        if(path.contains("qqmusic") && path.contains("|")){
+            String[] paths = path.split("|");
+            if(paths[1] != null && !paths[1].isEmpty()){
+                d2.setVisibility(View.VISIBLE);
+            }
+            if(paths[2] != null && !paths[2].isEmpty()){
+                d3.setVisibility(View.VISIBLE);
+            }
+        }*/
     }
 
     //下滑关闭dialog

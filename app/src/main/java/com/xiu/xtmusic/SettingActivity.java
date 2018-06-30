@@ -87,7 +87,7 @@ public class SettingActivity extends AppCompatActivity {
         if(!mApplication.supSpeed && !mApplication.supBassBoost && !mApplication.supPresetReverb){
             tips.setVisibility(View.VISIBLE);
             tips.setText("您的系统不支持音效调节");
-        }else if(!mApplication.supSpeed || !mApplication.supBassBoost || mApplication.supPresetReverb){
+        }else if(!mApplication.supSpeed || !mApplication.supBassBoost || !mApplication.supPresetReverb){
             tips.setVisibility(View.VISIBLE);
             tips.setText("检测到音效冲突，部分音效可能无法正常工作");
         }

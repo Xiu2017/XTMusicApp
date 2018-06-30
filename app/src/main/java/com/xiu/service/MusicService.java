@@ -128,7 +128,10 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                 query.setFilterById(mTaskId);
                 Cursor c = manager.query(query);
                 if (c.moveToFirst()) {
-                    installApk();
+                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    if(status == DownloadManager.STATUS_SUCCESSFUL){
+                        installApk();
+                    }
                 }
             } else {
                 switch (intent.getIntExtra("what", 0)) {
@@ -302,6 +305,11 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
 
         //读取缓存
         String path = music.getPath();
+        //Log.e("service", path);
+        if(path.contains("qqmusic")){
+            path = path.split("\\|")[0];
+            //Log.e("service", path);
+        }
         if (path.contains("http://")) {
             HttpProxyCacheServer proxy = app.getProxy(this);
             //proxy.registerCacheListener(this, music.getPath());

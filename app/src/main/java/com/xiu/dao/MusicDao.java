@@ -145,7 +145,7 @@ public class MusicDao {
                     }
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                     String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                    if (isRepeat(list, title, artist, album)) continue;    //去掉重复歌曲
+                    //if (isRepeat(list, title, artist, album)) continue;    //去掉重复歌曲
                     int time = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                     long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
 

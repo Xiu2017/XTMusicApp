@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/musicNum"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingLeft="15dp"
+            android:text="选择要下载的音质"
+            android:textColor="@color/colorText"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorLine" />
+    </RelativeLayout>
+
+    <!--    <Button
+            android:onClick="onClick"
+            android:id="@+id/menu_nextplay"
+            android:text="下一首播放"
+            android:textSize="15dp"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <Button
+            android:onClick="onClick"
+            android:id="@+id/send_upload"
+            android:text="上传歌曲"
+            android:textSize="15dp"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />-->
+
+    <Button
+        android:id="@+id/menu_download1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:onClick="onClick"
+        android:paddingLeft="15dp"
+        android:text="标准mp3"
+        android:textColor="@android:color/black"
+        android:textSize="15dp" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/menu_download2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:onClick="onClick"
+        android:paddingLeft="15dp"
+        android:text="高品mp3"
+        android:textColor="@android:color/black"
+        android:textSize="15dp" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/menu_download3"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:onClick="onClick"
+        android:paddingLeft="15dp"
+        android:text="无损flac"
+        android:textColor="@android:color/black"
+        android:textSize="15dp" />
+
+</LinearLayout>

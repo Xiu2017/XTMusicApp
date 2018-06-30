@@ -56,12 +56,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.sdsmdg.tastytoast.TastyToast;
 import com.xiu.adapter.MainPagerAdapter;
 import com.xiu.adapter.MusicListAdapter;
 import com.xiu.dao.MusicDao;
+import com.xiu.dialog.DownSelDialog;
 import com.xiu.dialog.ItemMenuDialog;
 import com.xiu.dialog.MusicInfoDialog;
 import com.xiu.entity.Msg;
@@ -504,7 +506,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 query.setFilterById(mTaskId);
                 Cursor c = manager.query(query);
                 if (c.moveToFirst()) {
-                    TastyToast.makeText(MainActivity.this, "音乐下载完成，保存在/XTMusic/Music目录下", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    switch (status) {
+                        //下载完成
+                        case DownloadManager.STATUS_SUCCESSFUL:
+                            TastyToast.makeText(MainActivity.this, "音乐下载完成，保存在/XTMusic/Music目录下", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+                            break;
+                        //下载失败
+                        case DownloadManager.STATUS_FAILED:
+                            TastyToast.makeText(MainActivity.this, "下载失败，换个音质试试", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+                            break;
+                    }
                 }
             }
         }
@@ -551,7 +563,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 break;
             case R.id.menu_download:  //下载音乐
                 dialog.dismiss();
-                downloadMusic(getMusicByNum(view));
+                LinearLayout layout1 = (LinearLayout) view.getParent();
+                TextView num1 = (TextView) layout1.findViewById(R.id.musicNum);
+                Music music1 = getMusicByNum(view);
+                dialog = new DownSelDialog(this, music1, num1.getText().toString());
+                dialog.show();
+                break;
+            case R.id.menu_download1:  //下载音乐
+                dialog.dismiss();
+                downloadMusic(getMusicByNum(view), 0);
+                break;
+            case R.id.menu_download2:  //下载音乐
+                dialog.dismiss();
+                downloadMusic(getMusicByNum(view), 1);
+                break;
+            case R.id.menu_download3:  //下载音乐
+                dialog.dismiss();
+                downloadMusic(getMusicByNum(view), 2);
                 break;
             case R.id.menu_share:  //分享音乐
                 dialog.dismiss();
@@ -577,7 +605,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
     }
 
-
     //定位歌曲
     public void hunt() {
         if(app.isDeleteMode()) return;
@@ -595,17 +622,22 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //下载音乐
     long mTaskId;
 
-    public void downloadMusic(Music music) {
+    public void downloadMusic(Music music, int index) {
         //下载链接校验，防止用户操作过快
         if (!music.getPath().contains("http://")) return;
 
         //读取缓存
-        String path = music.getPath();
+        String musicPath = music.getPath();
+        //判断要下载的音质
+        if(index != 0){
+            musicPath = musicPath.split("\\|")[index];
+        }
+        //Log.e("download", musicPath);
         HttpProxyCacheServer proxy = app.getProxy(this);
-        if (proxy.isCached(path)) {
-            path = proxy.getProxyUrl(music.getPath()).replace("file://", "");
+        if (proxy.isCached(musicPath)) {
+            musicPath = proxy.getProxyUrl(musicPath).replace("file://", "");
             String toPath = new StorageUtil(this).innerSDPath() + "/XTMusic/Music/" + music.getName();
-            FileUtils.copyFile(path, toPath);
+            FileUtils.copyFile(musicPath, toPath);
             //扫描到媒体库
             MediaScannerConnection.scanFile(this, new String[]{toPath}, null, null);
             TastyToast.makeText(this, "音乐下载完成，保存在/XTMusic/Music目录下", Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
@@ -614,9 +646,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
         TastyToast.makeText(this, "开始下载\"" + music.getArtist() + " - " + music.getTitle() + "\"，请在通知栏查看下载进度", Msg.LENGTH_SHORT, TastyToast.DEFAULT).show();
         //创建下载任务,downloadUrl就是下载链接
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(music.getPath()));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(musicPath));
         //指定下载路径和下载文件名
-        request.setDestinationInExternalPublicDir("/XTMusic/Music", music.getName());
+        if(index == 2){
+            request.setDestinationInExternalPublicDir("/XTMusic/Music", music.getName().replace(".mp3",".flac"));
+        }else {
+            request.setDestinationInExternalPublicDir("/XTMusic/Music", music.getName());
+        }
         //获取下载管理器
         DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         //将下载任务加入下载队列，否则不会进行下载
@@ -701,13 +737,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     delIdx = list.indexOf(music);
                     list.clear();
                     list.addAll(dao.getMusicData());
-                    app.setmList(list);
+                    if(app.getPlaylist() == 0){
+                        app.setmList(list);
+                    }
                     break;
                 case 1:
                     delIdx = historyData.indexOf(music);
                     historyData.clear();
                     historyData.addAll(dao.selMusicByDate());
-                    app.setmList(historyData);
+                    if(app.getPlaylist() == 1){
+                        app.setmList(historyData);
+                    }
                     break;
             }
 
@@ -738,8 +778,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     //分享音乐
     public void shareMusic(Music music) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        if (music.getPath().contains("http://")) {
-            String msg = "分享音乐：" + music.getArtist() + " - " + music.getTitle() + "\n" + music.getPath();
+        String path = music.getPath();
+        if (path.contains("http://")) {
+            if(path.contains("qqmusic")){
+                path = path.split("\\|")[0];
+            }
+            String msg = "分享音乐：" + music.getArtist() + " - " + music.getTitle() + "\n" + path;
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, msg);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -922,12 +966,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                     case 0:
                         list.clear();
                         list.addAll(dao.getMusicData());
-                        app.setmList(list);
+                        if(app.getPlaylist() == 0){
+                            app.setmList(list);
+                        }
                         break;
                     case 1:
                         historyData.clear();
                         historyData.addAll(dao.selMusicByDate());
-                        app.setmList(historyData);
+                        if (app.getPlaylist() == 1) {
+                            app.setmList(historyData);
+                        }
                         break;
                 }
 

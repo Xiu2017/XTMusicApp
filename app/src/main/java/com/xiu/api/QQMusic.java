@@ -190,7 +190,9 @@ public class QQMusic {
                 try {
                     JSONObject json = new JSONObject(str);
                     String path = json.getString("mp3_l");
-                    if(path == null || path.isEmpty()){
+                    path += "|" + json.getString("mp3_h");
+                    path += "|" + json.getString("flac");
+                    if(path == null || path.length() < 20){
                         bakMusicUrl(music);
                     }else {
                         music.setPath(path);
@@ -256,6 +258,7 @@ public class QQMusic {
                     String key = json.getString("key");
                     String musicUrl = urls[1] + "C100" + music.getPath() + ".m4a?vkey=" + key + "&fromtag=0";
                     music.setPath(musicUrl);
+                    music.setSize(music.getSize() / 5 - 10240);
 
                     //拼接专辑图片链接
                     String albumId = music.getAlbumPath();

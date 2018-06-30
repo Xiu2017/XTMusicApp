@@ -136,7 +136,10 @@ public class MusicListAdapter extends BaseAdapter {
             }
 
             //让正在播放的歌曲显示播放图标
-            if (app.getmList() != null && app.getmList().size() != 0 && app.getIdx() != 0 && app.getIdx() - 1 == i && music.getPath().equals(app.getmList().get(app.getIdx() - 1).getPath())) {
+            if (app.getmList() != null
+                    && app.getmList().size() != 0
+                    && app.getIdx() != 0 && app.getIdx() - 1 == i
+                    && music.getPath().equals(app.getmList().get(app.getIdx() - 1).getPath())) {
                 musicItem.musicNum.setVisibility(View.GONE);
                 musicItem.playing.setVisibility(View.VISIBLE);
 

@@ -76,7 +76,11 @@ public class MusicInfoDialog extends Dialog {
         fileSize.setText(df.format(temp));
 
         fileType.setText(name.substring(name.lastIndexOf(".") + 1));
-        filePath.setText(music.getPath().replace("/" + name, ""));
+        String path = music.getPath();
+        if(path.contains("qqmusic")){
+            path = path.split("\\|")[0];
+        }
+        filePath.setText(path.replace("/" + name, ""));
     }
 
     //下滑关闭dialog
