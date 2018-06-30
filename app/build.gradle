@@ -6,8 +6,8 @@ android {
         applicationId "com.xiu.xtmusic"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20180630
-        versionName "1.82"
+        versionCode 20180701
+        versionName "1.83"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

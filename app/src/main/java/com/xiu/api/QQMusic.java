@@ -121,8 +121,10 @@ public class QQMusic {
                                 fsinger2 = "、" + obj.getString("fsinger2");
                             }
                             music.setArtist(obj.getString("fsinger") + fsinger2);
-
-                            music.setAlbum(obj.getString("albumName_hilight"));
+                            String album = obj.getString("albumName_hilight")
+                                            .replace("<span class=\"c_tx_highlight\">","")
+                                            .replace("</span>","");
+                            music.setAlbum(album);
                             music.setName(music.getArtist() + " - " + music.getTitle() + ".m4a");
                             //if (!dao.isExist(local, music)) {
                                 list.add(music);
