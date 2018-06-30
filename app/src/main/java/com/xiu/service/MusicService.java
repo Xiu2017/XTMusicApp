@@ -244,10 +244,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                     mp.setPlaybackParams(mp.getPlaybackParams().setSpeed(sp).setPitch(pi));
                     mp.pause();
                 }
-            } catch (Exception e) {
-                //某些机型某些系统可能不支持，但不影响应用本身，所以可以忽略错误
-                //e.printStackTrace();
-                //TastyToast.makeText(app, "发生错误：" + e.getMessage(), TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
+            }catch (Exception e){
+                Log.w("MusicService","该系统不支持变速和音高");
             }
         }
     }
@@ -355,9 +353,15 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         }
                         updateLocMsg();
                         //启用低音和环绕
-                        bassBoost();
-                        presetReverb();
-                        changeplayerSpeed();
+                        if(mApplication.supBassBoost){
+                            bassBoost();
+                        }
+                        if(mApplication.supPresetReverb){
+                            presetReverb();
+                        }
+                        if(mApplication.supSpeed){
+                            changeplayerSpeed();
+                        }
 /*                        new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -859,18 +863,26 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //范围 0 - 1000
     private BassBoost mBass;
     public void  bassBoost(){
-        mBass = new BassBoost(0, mp.getAudioSessionId());
-        mBass.setEnabled(true);
-        mBass.setStrength((short) (bass*100));
+        try{
+            mBass = new BassBoost(0, mp.getAudioSessionId());
+            mBass.setEnabled(true);
+            mBass.setStrength((short) (bass*100));
+        }catch (Exception e){
+            Log.w("MusicService","该系统不支持低音增益");
+        }
     }
 
     //环绕音
     //1 小房间 2 中房间 3 大房间 4 中厅 5 大厅 6 板式
     private PresetReverb mPresetReverb;
     public void presetReverb(){
-        mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());
-        mPresetReverb.setEnabled(true);
-        mPresetReverb.setPreset((short) reverb);
+        try{
+            mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());
+            mPresetReverb.setEnabled(true);
+            mPresetReverb.setPreset((short) reverb);
+        }catch (Exception e){
+            Log.w("MusicService","该系统不支持混响");
+        }
     }
 
     //完全退出应用

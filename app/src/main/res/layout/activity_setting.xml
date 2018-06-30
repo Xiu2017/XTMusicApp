@@ -21,7 +21,17 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/shape_red" />
 
+    <TextView
+        android:id="@+id/tips"
+        android:visibility="gone"
+        android:textColor="#50D23A31"
+        android:gravity="center"
+        android:text="检测到您的系统可能无法正常使用该功能"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <RelativeLayout
+        android:id="@+id/speedView"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -54,6 +64,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/pitchView"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -86,6 +97,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/bassView"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -117,6 +129,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/reverbView"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 

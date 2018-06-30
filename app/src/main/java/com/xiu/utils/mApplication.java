@@ -6,6 +6,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.audiofx.BassBoost;
+import android.media.audiofx.PresetReverb;
+import android.os.Build;
+import android.util.Log;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.xiu.entity.Music;
@@ -38,6 +42,10 @@ public class mApplication extends Application {
     private Task task;
     private boolean deleteMode = false;
     private Map<Integer, Boolean> delMap = new HashMap<>();
+
+    public static boolean supSpeed;
+    public static boolean supBassBoost;
+    public static boolean supPresetReverb;
 
     //缓存开源框架：https://github.com/danikula/AndroidVideoCache
     //获取Proxy
@@ -83,6 +91,9 @@ public class mApplication extends Application {
         timer = new Timer();
         task = new Task();
         timer.schedule(task, 10000,5000);
+
+        //检查音效支持
+        checkSupported();
     }
 
     //当Service被系统杀死时，退出程序
@@ -136,6 +147,31 @@ public class mApplication extends Application {
             }
         }
         return false;
+    }
+
+    //检查音效支持
+    public void checkSupported(){
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
+            supSpeed = true;
+        }else {
+            Log.w("application","该系统不支持变速和音高");
+        }
+        try{
+            BassBoost mBass = new BassBoost(0, new MediaPlayer().getAudioSessionId());
+            supBassBoost = true;
+            mBass.release();
+            mBass = null;
+        }catch (Exception e){
+            Log.w("application","该系统不支持低音增益");
+        }
+        try{
+            PresetReverb mPresetReverb = new PresetReverb(0, new MediaPlayer().getAudioSessionId());
+            supPresetReverb = true;
+            mPresetReverb.release();
+            mPresetReverb = null;
+        }catch (Exception e){
+            Log.w("application","该系统不支持混响");
+        }
     }
 
     public List<Music> getmList() {

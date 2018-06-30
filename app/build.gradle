@@ -6,8 +6,8 @@ android {
         applicationId "com.xiu.xtmusic"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20180626
-        versionName "1.8"
+        versionCode 20180630
+        versionName "1.81"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -27,31 +27,31 @@ dependencies {
     //androidTestImplementation 'com.android.support.test:runner:1.0.2'
     //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //ORMLite
-    compile 'com.j256.ormlite:ormlite-core:5.0'
-    compile 'com.j256.ormlite:ormlite-android:5.0'
+    implementation 'com.j256.ormlite:ormlite-core:5.0'
+    implementation 'com.j256.ormlite:ormlite-android:5.0'
     //GSON
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
     //OKHTTP
     implementation files('libs/okhttp-3.9.1.jar')
     implementation files('libs/okio-1.13.0.jar')
     //图片高斯模糊
-    compile 'net.qiujuer.genius:blur:2.0.0-beta4'
+    implementation 'net.qiujuer.genius:blur:2.0.0-beta4'
     //圆形ImageView
-    compile 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
     //圆形进度条
-    compile 'com.czp.arcProgressBar:ArcProgressBar:1.0.1'
+    implementation 'com.czp.arcProgressBar:ArcProgressBar:1.0.1'
     //音乐缓存
-    compile 'com.danikula:videocache:2.7.0'
+    implementation 'com.danikula:videocache:2.7.0'
     //音乐可视化https://github.com/GautamChibde/android-audio-visualizer
-    compile 'com.chibde:audiovisualizer:2.0.1'
+    implementation 'com.chibde:audiovisualizer:2.0.1'
     //个性化Toast提示
-    compile 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
+    implementation 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     //图片开源框架
     //compile 'com.squareup.picasso:picasso:2.5.2'
     //破解网易云加密需要的包
     implementation files('libs/fastjson-1.2.32.jar')
     implementation files('libs/jsoup-1.10.3.jar')
-    compile 'io.apisense:rhino-android:1.0'
+    implementation 'io.apisense:rhino-android:1.0'
     //EventBus
     //compile 'org.greenrobot:eventbus:3.1.1'
 }

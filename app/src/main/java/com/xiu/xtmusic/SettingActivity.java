@@ -12,9 +12,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.sdsmdg.tastytoast.TastyToast;
 import com.xiu.customview.CustomVisualizer;
 import com.xiu.entity.Msg;
 import com.xiu.utils.mApplication;
@@ -49,8 +51,46 @@ public class SettingActivity extends AppCompatActivity {
 
         initStatusBar();
         initView();
+        hideNotSupOpt();
         initListener();
         initData();
+    }
+
+    //隐藏不支持的音效
+    public void hideNotSupOpt(){
+        TextView tips = (TextView) findViewById(R.id.tips);
+
+        if(!mApplication.supSpeed){
+            RelativeLayout speedView = (RelativeLayout) findViewById(R.id.speedView);
+            speedView.setAlpha(0.5f);
+            speedSB.setEnabled(false);
+            //speedView.setVisibility(View.GONE);
+            RelativeLayout pitchView = (RelativeLayout) findViewById(R.id.pitchView);
+            pitchView.setAlpha(0.5f);
+            pitchSB.setEnabled(false);
+            //pitchView.setVisibility(View.GONE);
+            checkBox.setVisibility(View.GONE);
+        }
+        if(!mApplication.supBassBoost){
+            RelativeLayout bassView = (RelativeLayout) findViewById(R.id.bassView);
+            bassView.setAlpha(0.5f);
+            bassSB.setEnabled(false);
+            //bassView.setVisibility(View.GONE);
+        }
+        if(!mApplication.supPresetReverb){
+            RelativeLayout reverbView = (RelativeLayout) findViewById(R.id.reverbView);
+            reverbView.setAlpha(0.5f);
+            reverbSB.setEnabled(false);
+            //reverbView.setVisibility(View.GONE);
+        }
+
+        if(!mApplication.supSpeed && !mApplication.supBassBoost && !mApplication.supPresetReverb){
+            tips.setVisibility(View.VISIBLE);
+            tips.setText("您的系统不支持音效调节");
+        }else if(!mApplication.supSpeed || !mApplication.supBassBoost || mApplication.supPresetReverb){
+            tips.setVisibility(View.VISIBLE);
+            tips.setText("检测到音效冲突，部分音效可能无法正常工作");
+        }
     }
 
     //初始化可视化
