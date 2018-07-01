@@ -266,7 +266,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
                 }
                 editor.apply();
                 editor.commit();
-                TastyToast.makeText(AlbumActivity.this, modeStr, Msg.LENGTH_SHORT, TastyToast.SUCCESS).show();
+                TastyToast.makeText(AlbumActivity.this, modeStr, Msg.LENGTH_SHORT, TastyToast.DEFAULT).show();
                 break;
             case R.id.lyricBtn:
                 if(viewPager.getCurrentItem() == 0){
