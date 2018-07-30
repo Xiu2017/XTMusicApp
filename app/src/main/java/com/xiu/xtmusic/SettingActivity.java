@@ -101,7 +101,7 @@ public class SettingActivity extends AppCompatActivity {
             //设置自定义颜色
             customVisualizer.setColor(getResources().getColor(R.color.colorPrimary));
             //设置可视化的采样率，10 - 256
-            customVisualizer.setDensity(96);
+            customVisualizer.setDensity(64);
             //绑定MediaPlayer
             customVisualizer.setPlayer(app.getMp().getAudioSessionId());
         }
@@ -213,14 +213,14 @@ public class SettingActivity extends AppCompatActivity {
             pitchSB.setEnabled(false);
             speedTV.setText("不支持");
         }else {
+            binding = pref.getBoolean("binding", true);
+            checkBox.setChecked(binding);
             int speed = pref.getInt("speed", 50);
             speedSB.setProgress(speed);
             speedTV.setText(df.format((speed+50)/100.0f));
             int pitch = pref.getInt("pitch", 50);
             pitchSB.setProgress(pitch);
             pitchTV.setText(df.format((pitch+50)/100.0f));
-            binding = pref.getBoolean("binding", true);
-            checkBox.setChecked(binding);
         }
 
         //低音增益

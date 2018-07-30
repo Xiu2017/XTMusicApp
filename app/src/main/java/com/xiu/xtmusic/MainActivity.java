@@ -629,9 +629,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //读取缓存
         String musicPath = music.getPath();
         //判断要下载的音质
-        if(index != 0){
-            musicPath = musicPath.split("\\|")[index];
-        }
+        musicPath = musicPath.split("\\|")[index];
         //Log.e("download", musicPath);
         HttpProxyCacheServer proxy = app.getProxy(this);
         if (proxy.isCached(musicPath)) {
@@ -715,13 +713,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         }
 
         //删除专辑图片
-        String innerSDPath = new StorageUtil(MainActivity.this).innerSDPath();
+/*        String innerSDPath = new StorageUtil(MainActivity.this).innerSDPath();
         String name = music.getName();
         final String path = innerSDPath + "/XTMusic/AlbumImg/" + name.substring(0, name.lastIndexOf(".")) + ".jpg";
         file = new File(path);
         if (file.exists()) {
             file.delete();
-        }
+        }*/
 
         //从数据库和媒体库中删除
         dao.delMusicById(music);

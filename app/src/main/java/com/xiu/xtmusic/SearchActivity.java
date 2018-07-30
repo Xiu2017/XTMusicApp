@@ -407,7 +407,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         public void success(String str) {
                             //转格式
                             //PicUtils.convertToJpg(toPath,toPath.replace(".png",".jpg"));
-                            //压缩图片文件(避免网易云专辑图片发生10几M这种恐怖的事情发生)
+                            //压缩图片文件(避免网易云专辑图片发生10几M这种恐怖的事情)
                             Bitmap bitmap = ImageUtil.getimage(toPath, 500f, 500f);
                             ImageUtil.saveBitmap(bitmap, toPath);
                             //刷新通知栏

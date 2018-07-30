@@ -14,13 +14,14 @@ public class HttpUtils {
     public static void doPost(final String httpPath, final String data, final CallBack callBack) {
         new Thread(new Runnable() {
             @Override
-            public void run() {
+            public synchronized void run() {
                 HttpURLConnection conn = null;
                 try {
                     URL url = new URL(httpPath);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
-                    conn.setConnectTimeout(10 * 1000);
+                    conn.setConnectTimeout(3 * 1000);
+                    conn.setReadTimeout(5 * 1000);
                     conn.setDoOutput(true);
                     conn.setUseCaches(false);
                     conn.setInstanceFollowRedirects(true);
@@ -46,13 +47,14 @@ public class HttpUtils {
     public static void doGet(final String httpPath, final CallBack callBack) {
         new Thread(new Runnable() {
             @Override
-            public void run() {
+            public synchronized void run() {
                 HttpURLConnection conn = null;
                 try {
                     URL url = new URL(httpPath);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(10 * 1000);
+                    conn.setConnectTimeout(3 * 1000);
+                    conn.setReadTimeout(5 * 1000);
                     conn.setInstanceFollowRedirects(true);
                     conn.connect();
                     callBack.success(FileUtils.formatStreamToString(conn.getInputStream()));

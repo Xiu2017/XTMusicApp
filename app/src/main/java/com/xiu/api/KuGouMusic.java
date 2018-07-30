@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,7 +53,12 @@ public class KuGouMusic {
         //构建一个请求对象
         Request request = new Request.Builder().url(searchUrl).build();
         //构建一个Call对象
-        okhttp3.Call call = new OkHttpClient().newCall(request);
+        okhttp3.Call call = new OkHttpClient.Builder()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .build()
+                .newCall(request);
         //异步执行请求
         call.enqueue(new Callback() {
             @Override
@@ -135,7 +141,12 @@ public class KuGouMusic {
         //构建一个请求对象
         Request request = new Request.Builder().url(url).build();
         //构建一个Call对象
-        okhttp3.Call call = new OkHttpClient().newCall(request);
+        okhttp3.Call call = new OkHttpClient.Builder()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .build()
+                .newCall(request);
         //异步执行请求
         call.enqueue(new Callback() {
             @Override

@@ -613,7 +613,7 @@ public class AlbumActivity extends AppCompatActivity implements View.OnClickList
     ViewPager.OnPageChangeListener mPageChange = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            int offset = Math.round(positionOffset * 30);
+            int offset = Math.round(positionOffset * 50);
             LinearLayout layout = (LinearLayout) album.getParent();
             switch (position) {
                 case 0:

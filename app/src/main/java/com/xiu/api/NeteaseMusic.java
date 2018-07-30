@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -73,7 +74,12 @@ public class NeteaseMusic {
                     .post(formBody)
                     .url("http://music.163.com/weapi/cloudsearch/get/web?csrf_token=").build();
             //构建一个Call对象
-            okhttp3.Call call = new OkHttpClient().newCall(request);
+            okhttp3.Call call = new OkHttpClient.Builder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .writeTimeout(3, TimeUnit.SECONDS)
+                    .readTimeout(5, TimeUnit.SECONDS)
+                    .build()
+                    .newCall(request);
             //异步执行请求
             call.enqueue(new Callback() {
                 @Override
@@ -188,7 +194,12 @@ public class NeteaseMusic {
                     .post(formBody)
                     .url("http://music.163.com/weapi/v1/resource/comments/R_SO_4_" + musicId + "?csrf_token=").build();
             //构建一个Call对象
-            okhttp3.Call call = new OkHttpClient().newCall(request);
+            okhttp3.Call call = new OkHttpClient.Builder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .writeTimeout(3, TimeUnit.SECONDS)
+                    .readTimeout(5, TimeUnit.SECONDS)
+                    .build()
+                    .newCall(request);
             //异步执行请求
             call.enqueue(new Callback() {
                 @Override

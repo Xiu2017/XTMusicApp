@@ -28,6 +28,8 @@ public class KuGouLrc {
                     String urlStr = "http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=" + name + "&duration=" + duration + "&hash=";
                     URL url = new URL(encodeUrl(urlStr));  //字符串进行URL编码
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(3 * 1000);
+                    conn.setReadTimeout(5 * 1000);
                     conn.connect();
 
                     //读取流 -- JSON歌曲列表
@@ -46,6 +48,8 @@ public class KuGouLrc {
                     urlStr = "http://lyrics.kugou.com/download?ver=1&client=pc&id=" + json3.get("id") + "&accesskey=" + json3.get("accesskey") + "&fmt=lrc&charset=utf8";
                     url = new URL(encodeUrl(urlStr));
                     conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(3 * 1000);
+                    conn.setReadTimeout(5 * 1000);
                     conn.connect();
 
                     //读取流 -- 歌词
