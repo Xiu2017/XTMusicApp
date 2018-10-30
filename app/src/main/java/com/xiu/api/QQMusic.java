@@ -49,7 +49,7 @@ public class QQMusic {
         final MusicList musicList = new MusicList();
         final List<Music> list = new ArrayList<>();
         //final List<Music> local = dao.getMusicData(keywork);
-        String searchUrl = "http://s.music.qq.com/fcgi-bin/music_search_new_platform?" +
+        String searchUrl = "https://c.y.qq.com/soso/fcgi-bin/client_search_cp?" +
                 "t=0&aggr=1&cr=1&loginUin=0&format=json&" +
                 "inCharset=GB2312&outCharset=utf-8&platform=jqminiframe.json&" +
                 "needNewCode=0&catZhida=0&remoteplace=sizer.newclient.next_song&" +
@@ -83,6 +83,8 @@ public class QQMusic {
             public void onResponse(@Nullable Call call, @NonNull Response response) throws IOException {
                 //通过response得到服务器响应内容
                 String str = response.body().string();
+                //Log.w("QQMUSICAPI",str);
+                //System.out.println(str);
                 try {
                     JSONArray json = new JSONObject(str)
                             .getJSONObject("data")
@@ -91,46 +93,34 @@ public class QQMusic {
                     if (json != null) {
                         for (int i = 0; i < json.length(); i++) {
                             JSONObject obj = json.getJSONObject(i);
-                            if(obj.toString().contains("&amp;#")){
-                                continue;
-                            }
+
                             Music music = new Music();
 
-                            String[] arr = obj.getString("f").split("\\|");
-                            //String unstr = obj.getString("f").replace("&amp;#", "%u");
-                            //Log.d("unstr", unstr+"");
-                            String lrcId;
-                            String size;
                             String id;
+                            String size = obj.getString("size128");
                             String albumId;
                             int time;
-                            if (arr.length == 25) {
-                                lrcId = arr[0];
-                                size = arr[12];
-                                id = arr[20];
-                                albumId = arr[22];
-                                time = Integer.parseInt(arr[7]) * 1000;
-                            } else {
-                                continue;
-                            }
-                            music.setLyric(lrcId);
-                            music.setPath(id);
+
+                            music.setPath(obj.getString("media_mid"));
                             //5-10240
                             music.setSize(size.equals("0") ? 0 : Long.parseLong(size));
-                            music.setAlbumPath(albumId);
-                            music.setTime(time);
+                            music.setAlbumPath(obj.getString("albumid"));
+                            //music.setTime(time);
 
-                            music.setTitle(obj.getString("fsong"));
+                            music.setTitle(obj.getString("songname"));
 
-                            String fsinger2 = "";
-                            if (obj.has("fsinger2") && obj.getString("fsinger2").length() > 0) {
-                                fsinger2 = "、" + obj.getString("fsinger2");
+                            JSONArray artists = obj.getJSONArray("singer");
+                            String artist = "";
+                            if (artists != null){
+                                for (int count=0; count < artists.length(); count++){
+                                    artist += artists.getJSONObject(count).getString("name")+"、";
+                                }
+                                artist += "、";
                             }
-                            music.setArtist(obj.getString("fsinger") + fsinger2);
-                            String album = obj.getString("albumName_hilight")
-                                            .replace("<span class=\"c_tx_highlight\">","")
-                                            .replace("</span>","");
-                            music.setAlbum(album);
+                            artist = artist.replace("、、","");
+                            music.setArtist(artist);
+
+                            music.setAlbum(obj.getString("albumname"));
                             music.setName(music.getArtist() + " - " + music.getTitle() + ".m4a");
                             //if (!dao.isExist(local, music)) {
                                 list.add(music);

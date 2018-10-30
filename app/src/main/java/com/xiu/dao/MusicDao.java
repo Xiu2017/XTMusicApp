@@ -166,8 +166,22 @@ public class MusicDao {
         return list;
     }
 
+    //SQL特殊字符转义
+    private static String ConvertSql(String sql){
+        sql = sql.replace("'","''");
+        sql = sql.replace("\"","\"\"");
+        // 这句话一定要在下面两个语句之前，否则作为转义符的方括号会被当作数据被再次处理
+        sql = sql.replace("[", "[[]");
+        sql = sql.replace("_", "[_]");
+        sql = sql.replace("%", "[%]");
+        return sql;
+    }
+
     //ContentResolver中获取音乐列表（带查询条件）
     public List<Music> getMusicData(String keywork) {
+        //防止SQL语句注入
+        keywork = ConvertSql(keywork);
+
         List<Music> list = new ArrayList<>();
         String[] columns = {  //要查询的列
                 MediaStore.Audio.Media.TITLE,  //标题
