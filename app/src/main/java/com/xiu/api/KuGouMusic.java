@@ -54,8 +54,8 @@ public class KuGouMusic {
         Request request = new Request.Builder().url(searchUrl).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build()
                 .newCall(request);
@@ -142,8 +142,8 @@ public class KuGouMusic {
         Request request = new Request.Builder().url(url).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build()
                 .newCall(request);

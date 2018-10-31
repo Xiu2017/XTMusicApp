@@ -59,8 +59,8 @@ public class QQMusic {
         Request request = new Request.Builder().url(searchUrl).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build()
                 .newCall(request);
@@ -94,17 +94,17 @@ public class QQMusic {
                         for (int i = 0; i < json.length(); i++) {
                             JSONObject obj = json.getJSONObject(i);
 
+                            if(!obj.has("media_mid")){
+                                continue;
+                            }
+
                             Music music = new Music();
 
-                            String id;
                             String size = obj.getString("size128");
-                            String albumId;
-                            int time;
-
                             music.setPath(obj.getString("media_mid"));
                             //5-10240
                             music.setSize(size.equals("0") ? 0 : Long.parseLong(size));
-                            music.setAlbumPath(obj.getString("albumid"));
+                            music.setAlbumPath(obj.getString("albummid"));
                             //music.setTime(time);
 
                             music.setTitle(obj.getString("songname"));
@@ -170,8 +170,8 @@ public class QQMusic {
         Request request = new Request.Builder().url(url).post(formBody).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build()
                 .newCall(request);
@@ -232,8 +232,8 @@ public class QQMusic {
         Request request = new Request.Builder().url(url).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(5, TimeUnit.SECONDS)
                 .build()
                 .newCall(request);

@@ -75,8 +75,8 @@ public class NeteaseMusic {
                     .url("http://music.163.com/weapi/cloudsearch/get/web?csrf_token=").build();
             //构建一个Call对象
             okhttp3.Call call = new OkHttpClient.Builder()
-                    .connectTimeout(3, TimeUnit.SECONDS)
-                    .writeTimeout(3, TimeUnit.SECONDS)
+                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .writeTimeout(5, TimeUnit.SECONDS)
                     .readTimeout(5, TimeUnit.SECONDS)
                     .build()
                     .newCall(request);
@@ -195,8 +195,8 @@ public class NeteaseMusic {
                     .url("http://music.163.com/weapi/v1/resource/comments/R_SO_4_" + musicId + "?csrf_token=").build();
             //构建一个Call对象
             okhttp3.Call call = new OkHttpClient.Builder()
-                    .connectTimeout(3, TimeUnit.SECONDS)
-                    .writeTimeout(3, TimeUnit.SECONDS)
+                    .connectTimeout(5, TimeUnit.SECONDS)
+                    .writeTimeout(5, TimeUnit.SECONDS)
                     .readTimeout(5, TimeUnit.SECONDS)
                     .build()
                     .newCall(request);
