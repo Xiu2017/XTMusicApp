@@ -6,9 +6,13 @@ android {
         applicationId "com.xiu.xtmusic"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20181031
-        versionName "1.9"
+        versionCode 20181129
+        versionName "1.10"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+/*        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }*/
     }
     buildTypes {
         release {
@@ -16,6 +20,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+/*    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }*/
 }
 
 dependencies {
@@ -52,6 +62,16 @@ dependencies {
     implementation files('libs/fastjson-1.2.32.jar')
     implementation files('libs/jsoup-1.10.3.jar')
     implementation 'io.apisense:rhino-android:1.0'
+
+    //支持无损的ijkplayer
+    //implementation 'com.github.zhangliangming:Player:v1.1'
+
+/*    implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'*/
+//    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8'
     //EventBus
     //compile 'org.greenrobot:eventbus:3.1.1'
 }

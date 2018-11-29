@@ -115,6 +115,10 @@ public class MusicDao {
         };
         //要筛选的格式
         String where = MediaStore.Audio.Media.DISPLAY_NAME + " like '%.mp3'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.ape'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.aac'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.ogg'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.wav'" +
                 " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.flac'" +
                 " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.m4a'";
         ContentResolver cr = context.getContentResolver();
@@ -194,6 +198,10 @@ public class MusicDao {
         };
         //要筛选的格式
         String where = "(" + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.mp3'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.ape'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.aac'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.ogg'" +
+                " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.wav'" +
                 " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.flac'" +
                 " or " + MediaStore.Audio.Media.DISPLAY_NAME + " like '%.m4a')" +
                 //要筛选的条件

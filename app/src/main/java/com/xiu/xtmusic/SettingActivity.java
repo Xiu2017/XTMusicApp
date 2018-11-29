@@ -64,10 +64,12 @@ public class SettingActivity extends AppCompatActivity {
             RelativeLayout speedView = (RelativeLayout) findViewById(R.id.speedView);
             speedView.setAlpha(0.5f);
             speedSB.setEnabled(false);
+            speedTV.setText("不支持");
             //speedView.setVisibility(View.GONE);
             RelativeLayout pitchView = (RelativeLayout) findViewById(R.id.pitchView);
             pitchView.setAlpha(0.5f);
             pitchSB.setEnabled(false);
+            pitchTV.setText("不支持");
             //pitchView.setVisibility(View.GONE);
             checkBox.setVisibility(View.GONE);
         }
@@ -75,12 +77,14 @@ public class SettingActivity extends AppCompatActivity {
             RelativeLayout bassView = (RelativeLayout) findViewById(R.id.bassView);
             bassView.setAlpha(0.5f);
             bassSB.setEnabled(false);
+            bassTV.setText("不支持");
             //bassView.setVisibility(View.GONE);
         }
         if(!mApplication.supPresetReverb){
             RelativeLayout reverbView = (RelativeLayout) findViewById(R.id.reverbView);
             reverbView.setAlpha(0.5f);
             reverbSB.setEnabled(false);
+            reverbTV.setText("不支持");
             //reverbView.setVisibility(View.GONE);
         }
 
@@ -89,7 +93,7 @@ public class SettingActivity extends AppCompatActivity {
             tips.setText("您的系统不支持音效调节");
         }else if(!mApplication.supSpeed || !mApplication.supBassBoost || !mApplication.supPresetReverb){
             tips.setVisibility(View.VISIBLE);
-            tips.setText("检测到音效冲突，部分音效可能无法正常工作");
+            tips.setText("检测到兼容问题，部分音效可能无法正常工作");
         }
     }
 
@@ -139,6 +143,7 @@ public class SettingActivity extends AppCompatActivity {
             sBroadcast.setAction("sBroadcast");
             switch (seekBar.getId()){
                 case R.id.speedSB:
+                    if(!mApplication.supSpeed) return;
                     //确保不会死循环
                     if(synced){
                         synced = false;
@@ -157,6 +162,7 @@ public class SettingActivity extends AppCompatActivity {
                     }
                     break;
                 case R.id.pitchSB:
+                    if(!mApplication.supSpeed) return;
                     //确保不会死循环
                     if(synced){
                         synced = false;
@@ -175,12 +181,14 @@ public class SettingActivity extends AppCompatActivity {
                     }
                     break;
                 case R.id.bassSB:
+                    if(!mApplication.supBassBoost) return;
                     bassTV.setText(String.valueOf(i));
                     editor.putInt("bass", i);
                     sBroadcast.putExtra("what", Msg.BASS_LEVEL);
                     sBroadcast.putExtra("bass", i);
                     break;
                 case R.id.reverbSB:
+                    if(!mApplication.supPresetReverb) return;
                     reverbTV.setText(reverbToStr(i));
                     editor.putInt("reverb", i);
                     sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
@@ -205,14 +213,7 @@ public class SettingActivity extends AppCompatActivity {
     //初始化持久化数据
     public void initData() {
         //速度和音高
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            speedSB.setProgress(50);
-            speedSB.setEnabled(false);
-            speedTV.setText("不支持");
-            pitchSB.setProgress(50);
-            pitchSB.setEnabled(false);
-            speedTV.setText("不支持");
-        }else {
+        if (mApplication.supSpeed) {
             binding = pref.getBoolean("binding", true);
             checkBox.setChecked(binding);
             int speed = pref.getInt("speed", 50);
@@ -221,17 +222,36 @@ public class SettingActivity extends AppCompatActivity {
             int pitch = pref.getInt("pitch", 50);
             pitchSB.setProgress(pitch);
             pitchTV.setText(df.format((pitch+50)/100.0f));
-        }
+        }/*else {
+            speedSB.setProgress(50);
+            speedSB.setEnabled(false);
+            speedTV.setText("不支持");
+            pitchSB.setProgress(50);
+            pitchSB.setEnabled(false);
+            pitchTV.setText("不支持");
+        }*/
 
         //低音增益
-        int bass = pref.getInt("bass", 0);
-        bassSB.setProgress(bass);
-        bassTV.setText(String.valueOf(bass));
+        if(mApplication.supBassBoost){
+            int bass = pref.getInt("bass", 0);
+            bassSB.setProgress(bass);
+            bassTV.setText(String.valueOf(bass));
+        }/*else {
+            bassSB.setProgress(0);
+            bassSB.setEnabled(false);
+            bassTV.setText("不支持");
+        }*/
 
         //混音
-        int reverb = pref.getInt("reverb", 0);
-        reverbSB.setProgress(reverb);
-        reverbTV.setText(reverbToStr(reverb));
+        if(mApplication.supPresetReverb){
+            int reverb = pref.getInt("reverb", 0);
+            reverbSB.setProgress(reverb);
+            reverbTV.setText(reverbToStr(reverb));
+        }/*else {
+            reverbSB.setProgress(0);
+            reverbSB.setEnabled(false);
+            reverbTV.setText("不支持");
+        }*/
     }
 
     //混响等级转字符串

@@ -1,6 +1,5 @@
 package com.xiu.service;
 
-import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,11 +8,9 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -37,7 +34,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import com.danikula.videocache.HttpProxyCacheServer;
@@ -53,24 +49,14 @@ import com.xiu.xtmusic.AboutActivity;
 import com.xiu.xtmusic.AlbumActivity;
 import com.xiu.xtmusic.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * 音乐服务
@@ -186,21 +172,15 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                         if(sp != -1) speed = sp;
                         int pi = intent.getIntExtra("pitch", -1);
                         if(pi != -1) pitch = pi;
-                        if(mp != null){
-                            changeplayerSpeed();
-                        }
+                        changeplayerSpeed();
                         break;
                     case Msg.BASS_LEVEL:
                         bass = intent.getIntExtra("bass",0);
-                        if(mp != null){
-                            bassBoost();
-                        }
+                        bassBoost();
                         break;
                     case Msg.REVERB_LEVEL:
                         reverb = intent.getIntExtra("reverb", 0);
-                        if(mp != null){
-                            presetReverb();
-                        }
+                        presetReverb();
                         break;
                     case Msg.MTASKID:
                         mTaskId = intent.getLongExtra("mTaskId", 0L);
@@ -236,7 +216,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //播放速度
     public void changeplayerSpeed() {
         // this checks on API 23 and up6.0以上
-        if (mp == null) return;
+        if (mp == null || !mApplication.supSpeed) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             float sp = (speed+50)/100.0f;
             float pi = (pitch+50)/100.0f;
@@ -289,7 +269,8 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
             if (msg.what == Msg.CURRENTTIME) {
                 Intent broadcast = new Intent("sBroadcast");
                 broadcast.putExtra("what", Msg.CURRENTTIME);
-                broadcast.putExtra("current", mp.getCurrentPosition());
+                int current = Long.valueOf(mp.getCurrentPosition()).intValue();
+                broadcast.putExtra("current", current);
                 if (timer != null) {
                     broadcast.putExtra("time", time);
                 }
@@ -332,16 +313,22 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
         if (mp == null)
             mp = new MediaPlayer();
         app.setMp(mp);
-        try {
+        try{
             mp.reset();
             mp.setDataSource(path);
-            mp.prepareAsync();
+            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    TastyToast.makeText(MusicService.this, "播放出错，错误码：("+what+","+extra+")", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+                    return false;
+                }
+            });
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     //更新音乐时间
                     if (music.getTime() == 0) {
-                        music.setTime(mp.getDuration());
+                        music.setTime(Long.valueOf(mp.getDuration()).intValue());
                         dao.updMusic(music);
                     }
                     //获取焦点
@@ -350,7 +337,7 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                             AudioManager.AUDIOFOCUS_GAIN);
                     if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                         //播放音乐
-                        changeplayerSpeed();
+                        //changeplayerSpeed();
                         mp.start();
                         updatePlaybackState(1);
                         senRefresh();  //通知activity更新信息
@@ -360,29 +347,16 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                             mMediaSession.setActive(true);
                         }
                         updateLocMsg();
-                        //启用低音和环绕
-                        if(mApplication.supBassBoost){
+                        //播放设置生效
+                        if(bass > 0){
                             bassBoost();
                         }
-                        if(mApplication.supPresetReverb){
+                        if(reverb > 0){
                             presetReverb();
                         }
-                        if(mApplication.supSpeed){
+                        if(speed != 0){
                             changeplayerSpeed();
                         }
-/*                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setPresetReverb();
-                            }
-                        }).start();*/
-                        //onLockScreen();
-                        //更新锁屏音乐信息
-                        //if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
-                        //onLockScreen();
-                        //}
-                        //am.unregisterMediaButtonEventReceiver(mComponentName);
-                        //am.registerMediaButtonEventReceiver(mComponentName);
                     }
                 }
             });
@@ -415,9 +389,11 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
                 senRefresh();  //通知activity更新信息
                 musicNotification();  //更新状态栏信息
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            TastyToast.makeText(this, "无法播放该歌曲", Msg.LENGTH_SHORT, TastyToast.ERROR).show();
+
+            mp.prepareAsync();
+
+        }catch (IOException e){
+            TastyToast.makeText(this, "播放出错："+e.toString(), Msg.LENGTH_SHORT, TastyToast.ERROR).show();
         }
     }
 
@@ -871,12 +847,13 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //范围 0 - 1000
     private BassBoost mBass;
     public void  bassBoost(){
+        if(mp == null || !mApplication.supBassBoost) return;
         try{
             mBass = new BassBoost(0, mp.getAudioSessionId());
             mBass.setEnabled(true);
             mBass.setStrength((short) (bass*100));
         }catch (Exception e){
-            Log.w("MusicService","该系统不支持低音增益");
+            //Log.w("MusicService","该系统不支持低音增益");
         }
     }
 
@@ -884,12 +861,13 @@ public class MusicService extends Service implements MediaPlayer.OnBufferingUpda
     //1 小房间 2 中房间 3 大房间 4 中厅 5 大厅 6 板式
     private PresetReverb mPresetReverb;
     public void presetReverb(){
+        if(mp == null || !mApplication.supPresetReverb) return;
         try{
             mPresetReverb = new PresetReverb(0, mp.getAudioSessionId());
             mPresetReverb.setEnabled(true);
             mPresetReverb.setPreset((short) reverb);
         }catch (Exception e){
-            Log.w("MusicService","该系统不支持混响");
+            //Log.w("MusicService","该系统不支持混响");
         }
     }
 

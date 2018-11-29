@@ -12,6 +12,7 @@
         android:id="@+id/albumImg"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:scaleType="centerCrop"
         android:layout_marginRight="5dp"
         android:src="@mipmap/ic_launcher" />
 

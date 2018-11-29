@@ -46,6 +46,7 @@ public class mApplication extends Application {
     public static boolean supSpeed;
     public static boolean supBassBoost;
     public static boolean supPresetReverb;
+    String BRAND = "华为,HUAWEI,Huawei,HuaWei,荣耀,HONOR,Honor";  //不兼容变速音效的厂商
 
     //缓存开源框架：https://github.com/danikula/AndroidVideoCache
     //获取Proxy
@@ -151,13 +152,15 @@ public class mApplication extends Application {
 
     //检查音效支持
     public void checkSupported(){
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
+        MediaPlayer testMediaPlayer = new MediaPlayer();
+        int sessionId = testMediaPlayer.getAudioSessionId();
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M && !BRAND.contains(android.os.Build.BRAND)){
             supSpeed = true;
         }else {
             Log.w("application","该系统不支持变速和音高");
         }
         try{
-            BassBoost mBass = new BassBoost(0, new MediaPlayer().getAudioSessionId());
+            BassBoost mBass = new BassBoost(0, sessionId);
             supBassBoost = true;
             mBass.release();
             mBass = null;
@@ -165,13 +168,15 @@ public class mApplication extends Application {
             Log.w("application","该系统不支持低音增益");
         }
         try{
-            PresetReverb mPresetReverb = new PresetReverb(0, new MediaPlayer().getAudioSessionId());
+            PresetReverb mPresetReverb = new PresetReverb(0, sessionId);
             supPresetReverb = true;
             mPresetReverb.release();
             mPresetReverb = null;
         }catch (Exception e){
             Log.w("application","该系统不支持混响");
         }
+        testMediaPlayer.release();
+        testMediaPlayer = null;
     }
 
     public List<Music> getmList() {

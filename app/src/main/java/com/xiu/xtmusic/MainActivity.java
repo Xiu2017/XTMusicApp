@@ -141,26 +141,32 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             int reverb = pref.getInt("reverb", 0);
 
             //speedItem.setTitle("播放速度 " + (float) (Math.round(speed * 100)) / 100);
-            sBroadcast = new Intent();
-            sBroadcast.setAction("sBroadcast");
-            sBroadcast.putExtra("what", Msg.SPEED_PITCH);
-            sBroadcast.putExtra("speed", speed);
-            sBroadcast.putExtra("pitch", pitch);
-            sendBroadcast(sBroadcast);
+            if(speed != 1){
+                sBroadcast = new Intent();
+                sBroadcast.setAction("sBroadcast");
+                sBroadcast.putExtra("what", Msg.SPEED_PITCH);
+                sBroadcast.putExtra("speed", speed);
+                sBroadcast.putExtra("pitch", pitch);
+                sendBroadcast(sBroadcast);
+            }
 
             //bassItem.setTitle("低音增益 " + bass);
-            sBroadcast = new Intent();
-            sBroadcast.setAction("sBroadcast");
-            sBroadcast.putExtra("what", Msg.BASS_LEVEL);
-            sBroadcast.putExtra("bass", bass);
-            sendBroadcast(sBroadcast);
+            if(bass > 0){
+                sBroadcast = new Intent();
+                sBroadcast.setAction("sBroadcast");
+                sBroadcast.putExtra("what", Msg.BASS_LEVEL);
+                sBroadcast.putExtra("bass", bass);
+                sendBroadcast(sBroadcast);
+            }
 
             //reverbItem.setTitle("混响 [ " + reverbToStr(reverb) + " ]");
-            sBroadcast = new Intent();
-            sBroadcast.setAction("sBroadcast");
-            sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
-            sBroadcast.putExtra("reverb", reverb);
-            sendBroadcast(sBroadcast);
+            if(reverb > 0){
+                sBroadcast = new Intent();
+                sBroadcast.setAction("sBroadcast");
+                sBroadcast.putExtra("what", Msg.REVERB_LEVEL);
+                sBroadcast.putExtra("reverb", reverb);
+                sendBroadcast(sBroadcast);
+            }
         }
     }
 
