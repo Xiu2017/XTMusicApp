@@ -136,10 +136,26 @@ public class KuGouMusic {
         }
 
         //http://www.kugou.com/yy/index.php?r=play/getdata&hash=
-        //String url = "http://m.kugou.com/app/i/getSongInfo.php?hash="+hash+"&cmd=playInfo";
+//        String url = "http://m.kugou.com/app/i/getSongInfo.php?hash="+hash+"&cmd=playInfo";
         String url = "http://www.kugou.com/yy/index.php?r=play/getdata&hash=" + hash;
+//        String url = "https://wwwapi.kugou.com/yy/index.php?r=play/getdata&hash=" + hash;
         //构建一个请求对象
-        Request request = new Request.Builder().url(url).build();
+        //Request request = new Request.Builder().url(url).build();
+        //构建一个请求对象
+        Request request = new Request.Builder()
+                .removeHeader("User-Agent")
+                .addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36")
+                .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
+                .addHeader("Cache-Control", "max-age=0")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("Cookie", "kg_mid=917aec0734eebfbc2cda15a8fdf066ee; ACK_SERVER_10015=%7B%22list%22%3A%5B%5B%22gzlogin-user.kugou.com%22%5D%5D%7D; Hm_lvt_aedee6983d4cfc62f509129360d6bb3d=1566048962; kg_dfid=07gy9j3Chhtn0MNvE81I9fhf; kg_dfid_collect=d41d8cd98f00b204e9800998ecf8427e; Hm_lpvt_aedee6983d4cfc62f509129360d6bb3d=1566050138")
+                .addHeader("If-Modified-Since", "Sat, 17 Aug 2019 14:17:00 GMT")
+                .addHeader("Upgrade-Insecure-Requests", "1")
+                .addHeader("Host", "www.kugou.com")
+//                .addHeader("Accept-Encoding", "gzip, deflate")
+                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+                //.post(formBody)
+                .url(url).build();
         //构建一个Call对象
         okhttp3.Call call = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
@@ -166,7 +182,9 @@ public class KuGouMusic {
                 try {
                     JSONObject json = new JSONObject(str).getJSONObject("data");
                     //Log.i("json", json.toString());
-                    music.setPath(json.getString("play_url"));
+                    String path = json.getString("play_url");
+                    path = path.replace("https://", "http://");
+                    music.setPath(path);
                     music.setTime(json.getInt("timelength"));
                     //music.setName(music.getArtist()+" - "+music.getTitle()+".mp3");
                     music.setAlbum(json.getString("album_name"));
