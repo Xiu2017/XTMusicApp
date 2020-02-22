@@ -192,34 +192,34 @@ public class QQMusic {
                 Log.d("str", str);
                 try {
                     JSONObject json = new JSONObject(str);
-                    String path = json.getString("mp3_l");
-                    path += "|" + json.getString("mp3_h");
-                    path += "|" + json.getString("flac");
-                    if(path == null || path.length() < 20){
-                        bakMusicUrl(music);
-                    }else {
-                        music.setPath(path);
-                        music.setName(music.getName().replace("m4a","mp3"));
+                    String path = json.getString("m4a");
+//                    path += "|" + json.getString("mp3_h");
+//                    path += "|" + json.getString("flac");
+//                    if(path == null || path.length() < 20){
+//                        bakMusicUrl(music);
+//                    } else {
+                    music.setPath(path);
+                    music.setName(music.getName().replace("m4a","mp3"));
 
-                        //拼接专辑图片链接
-                        String albumId = music.getAlbumPath();
-                        String albumUrl = null;
-                        if(albumId.length() > 2){
-                            albumUrl = "http://imgcache.qq.com/music/photo/mid_album_500/"
-                                    + albumId.substring(albumId.length() - 2, albumId.length() - 1) + "/"
-                                    + albumId.substring(albumId.length() - 1, albumId.length()) + "/"
-                                    + albumId + ".jpg";
-                        }
-                        music.setAlbumPath(albumUrl);
-
-                        //拼接歌词链接 -- 有时间再做
-
-                        Intent kBroadcast = new Intent();
-                        kBroadcast.setAction("sBroadcast");
-                        kBroadcast.putExtra("what", Msg.GET_MUSIC_PATH);
-                        kBroadcast.putExtra("music", music);
-                        context.sendBroadcast(kBroadcast);
+                    //拼接专辑图片链接
+                    String albumId = music.getAlbumPath();
+                    String albumUrl = null;
+                    if(albumId.length() > 2){
+                        albumUrl = "http://imgcache.qq.com/music/photo/mid_album_500/"
+                                + albumId.substring(albumId.length() - 2, albumId.length() - 1) + "/"
+                                + albumId.substring(albumId.length() - 1, albumId.length()) + "/"
+                                + albumId + ".jpg";
                     }
+                    music.setAlbumPath(albumUrl);
+
+                    //拼接歌词链接 -- 有时间再做
+
+                    Intent kBroadcast = new Intent();
+                    kBroadcast.setAction("sBroadcast");
+                    kBroadcast.putExtra("what", Msg.GET_MUSIC_PATH);
+                    kBroadcast.putExtra("music", music);
+                    context.sendBroadcast(kBroadcast);
+//                    }
                 } catch (JSONException e) {
                     bakMusicUrl(music);
                 }
